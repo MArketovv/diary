@@ -231,6 +231,25 @@ h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wra
   .md:not(.off) svg{animation:hover 3.2s ease-in-out infinite}
   .md:not(.off) .eyes{animation:flick 2.2s steps(1) infinite}
 }
+/* Гроза под музыку */
+.mascot .tears,.mascot .frown{opacity:0;transition:opacity .5s}
+.mascot .smile,.mascot .grin{transition:opacity .5s}
+html.storm .mascot .tears,html.storm .mascot .frown{opacity:1}
+html.storm .mascot .smile,html.storm .mascot .grin{opacity:0}
+.mascot .tears path{transform-box:fill-box;transform-origin:center top}
+#dim{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity 1.6s;background:linear-gradient(180deg,rgba(25,40,70,.26),rgba(25,40,70,.08))}
+html[data-side="dark"] #dim{background:linear-gradient(180deg,rgba(0,0,0,.32),rgba(0,0,0,.08))}
+html.storm #dim{opacity:1}
+#rain{position:fixed;inset:0;z-index:25;pointer-events:none}
+#flash{position:fixed;inset:0;z-index:26;pointer-events:none;opacity:0;background:#F3F6FF}
+html[data-side="dark"] #flash{background:#FFD9CF}
+@media (prefers-reduced-motion:no-preference){
+  html.storm .mascot .tears path{animation:tear 1.3s ease-in infinite}
+  html.storm .mascot .tears path:nth-child(2){animation-delay:.55s}
+  html.storm .mascot svg{animation:sob .5s ease-in-out infinite!important}
+}
+@keyframes tear{0%{transform:translateY(-2px) scale(.6);opacity:0}15%{opacity:1}100%{transform:translateY(10px) scale(1);opacity:0}}
+@keyframes sob{50%{transform:translateY(1px) scaleY(.96)}}
 @keyframes bob{50%{transform:translateY(-3px)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes hover{50%{transform:translateY(2px) rotate(-3deg)}}
@@ -295,7 +314,7 @@ h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wra
   <header class="top">
     <div class="brand">
       <div class="brand-l"><h1>Дневник</h1><button id="musicBtn" class="mbtn" aria-pressed="false" title="Включить музыку" aria-label="Музыка">♪</button></div>
-      <div class="brand-r"><div class="gwrap"><span class="mascot ml" id="mL" title="Дух света"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="sunB" cx="40%" cy="35%" r="65%"><stop offset="0" stop-color="#FFF8C2"/><stop offset=".6" stop-color="#FFC93C"/><stop offset="1" stop-color="#F0960C"/></radialGradient></defs><g class="rays" stroke="#F0A800" stroke-width="2.4" stroke-linecap="round"><path d="M40 27h4.5M8 27H3.5M24 43v4.5M35.3 38.3l3.2 3.2M12.7 38.3l-3.2 3.2M12.7 15.7l-3.2-3.2M35.3 15.7l3.2-3.2"/></g><circle cx="24" cy="27" r="13" fill="url(#sunB)" stroke="#DB8500" stroke-width="1"/><path d="M24 14.5v-3.5" stroke="#3E8A28" stroke-width="1.3" stroke-linecap="round"/><path d="M24 11.5c.3-3.6 2.4-6 6.2-6.6-.8 3.6-3 5.8-6.2 6.6z" fill="#5DB33A"/><path d="M24 12c-.8-2.8-2.8-4.6-5.8-4.8.8 2.8 2.9 4.5 5.8 4.8z" fill="#7CC84E"/><ellipse cx="19.5" cy="26" rx="1.7" ry="2.2" fill="#3A2A05"/><ellipse cx="28.5" cy="26" rx="1.7" ry="2.2" fill="#3A2A05"/><circle cx="20.1" cy="25.2" r=".6" fill="#fff"/><circle cx="29.1" cy="25.2" r=".6" fill="#fff"/><circle cx="16.4" cy="30.2" r="2.2" fill="#FF7F5A" opacity=".55"/><circle cx="31.6" cy="30.2" r="2.2" fill="#FF7F5A" opacity=".55"/><path d="M20.5 31c1.8 2.2 5.2 2.2 7 0" stroke="#3A2A05" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg></span><div class="seg" id="groupSeg" role="group" aria-label="Группа"></div><span class="mascot md" id="mD" title="Бес тьмы"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="impB" cx="50%" cy="38%" r="62%"><stop offset="0" stop-color="#6A120A"/><stop offset=".65" stop-color="#2A0605"/><stop offset="1" stop-color="#0E0202"/></radialGradient></defs><path d="M15 18.5Q10.5 10.5 13.5 4.5Q15.5 12 20 15z" fill="#2A0805" stroke="#9E2412" stroke-width=".9" stroke-linejoin="round"/><path d="M33 18.5Q37.5 10.5 34.5 4.5Q32.5 12 28 15z" fill="#2A0805" stroke="#9E2412" stroke-width=".9" stroke-linejoin="round"/><path d="M24 12.5c8 0 13 6 13 14 0 4-1.4 7.6-3.6 10.4l1.6 5-4.2-2.4c-2 1.3-4.3 2-6.8 2s-4.8-.7-6.8-2L13 42l1.6-5C12.4 34.1 11 30.5 11 26.5c0-8 5-14 13-14z" fill="url(#impB)" stroke="#A3271A" stroke-width="1" stroke-linejoin="round"/><g class="eyes"><path d="M16.3 23.6l6.4 2.4-6.2 1.6z" fill="#FF7A2E"/><path d="M31.7 23.6l-6.4 2.4 6.2 1.6z" fill="#FF7A2E"/></g><path d="M18.5 32.6l2 1.7 1.8-1.4 1.7 1.7 1.7-1.7 1.8 1.4 2-1.7" stroke="#FF7A2E" stroke-width="1.3" fill="none" stroke-linejoin="round" stroke-linecap="round"/><circle cx="7.5" cy="30" r="1" fill="#FF6A3D"/><circle cx="41" cy="21" r="1.2" fill="#FF6A3D"/><circle cx="39.5" cy="35" r=".8" fill="#FFA060"/></svg></span></div><span id="weekPill" class="pill"></span></div>
+      <div class="brand-r"><div class="gwrap"><span class="mascot ml" id="mL" title="Дух света"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="sunB" cx="40%" cy="35%" r="65%"><stop offset="0" stop-color="#FFF8C2"/><stop offset=".6" stop-color="#FFC93C"/><stop offset="1" stop-color="#F0960C"/></radialGradient></defs><g class="rays" stroke="#F0A800" stroke-width="2.4" stroke-linecap="round"><path d="M40 27h4.5M8 27H3.5M24 43v4.5M35.3 38.3l3.2 3.2M12.7 38.3l-3.2 3.2M12.7 15.7l-3.2-3.2M35.3 15.7l3.2-3.2"/></g><circle cx="24" cy="27" r="13" fill="url(#sunB)" stroke="#DB8500" stroke-width="1"/><path d="M24 14.5v-3.5" stroke="#3E8A28" stroke-width="1.3" stroke-linecap="round"/><path d="M24 11.5c.3-3.6 2.4-6 6.2-6.6-.8 3.6-3 5.8-6.2 6.6z" fill="#5DB33A"/><path d="M24 12c-.8-2.8-2.8-4.6-5.8-4.8.8 2.8 2.9 4.5 5.8 4.8z" fill="#7CC84E"/><ellipse cx="19.5" cy="26" rx="1.7" ry="2.2" fill="#3A2A05"/><ellipse cx="28.5" cy="26" rx="1.7" ry="2.2" fill="#3A2A05"/><circle cx="20.1" cy="25.2" r=".6" fill="#fff"/><circle cx="29.1" cy="25.2" r=".6" fill="#fff"/><circle cx="16.4" cy="30.2" r="2.2" fill="#FF7F5A" opacity=".55"/><circle cx="31.6" cy="30.2" r="2.2" fill="#FF7F5A" opacity=".55"/><path class="smile" d="M20.5 31c1.8 2.2 5.2 2.2 7 0" stroke="#3A2A05" stroke-width="1.6" fill="none" stroke-linecap="round"/><path class="frown" d="M20.5 33.2c1.8-2.2 5.2-2.2 7 0" stroke="#3A2A05" stroke-width="1.6" fill="none" stroke-linecap="round"/><g class="tears"><path d="M19.5 28.4c-.9 1.6-1.4 2.6-1.4 3.3a1.4 1.4 0 0 0 2.8 0c0-.7-.5-1.7-1.4-3.3z" fill="#4AA8FF"/><path d="M28.5 28.4c-.9 1.6-1.4 2.6-1.4 3.3a1.4 1.4 0 0 0 2.8 0c0-.7-.5-1.7-1.4-3.3z" fill="#4AA8FF"/></g></svg></span><div class="seg" id="groupSeg" role="group" aria-label="Группа"></div><span class="mascot md" id="mD" title="Бес тьмы"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="impB" cx="50%" cy="38%" r="62%"><stop offset="0" stop-color="#6A120A"/><stop offset=".65" stop-color="#2A0605"/><stop offset="1" stop-color="#0E0202"/></radialGradient></defs><path d="M15 18.5Q10.5 10.5 13.5 4.5Q15.5 12 20 15z" fill="#2A0805" stroke="#9E2412" stroke-width=".9" stroke-linejoin="round"/><path d="M33 18.5Q37.5 10.5 34.5 4.5Q32.5 12 28 15z" fill="#2A0805" stroke="#9E2412" stroke-width=".9" stroke-linejoin="round"/><path d="M24 12.5c8 0 13 6 13 14 0 4-1.4 7.6-3.6 10.4l1.6 5-4.2-2.4c-2 1.3-4.3 2-6.8 2s-4.8-.7-6.8-2L13 42l1.6-5C12.4 34.1 11 30.5 11 26.5c0-8 5-14 13-14z" fill="url(#impB)" stroke="#A3271A" stroke-width="1" stroke-linejoin="round"/><g class="eyes"><path d="M16.3 23.6l6.4 2.4-6.2 1.6z" fill="#FF7A2E"/><path d="M31.7 23.6l-6.4 2.4 6.2 1.6z" fill="#FF7A2E"/></g><path class="grin" d="M18.5 32.6l2 1.7 1.8-1.4 1.7 1.7 1.7-1.7 1.8 1.4 2-1.7" stroke="#FF7A2E" stroke-width="1.3" fill="none" stroke-linejoin="round" stroke-linecap="round"/><path class="frown" d="M19 35c1.8-1.7 3.4-2.4 5-2.4s3.2.7 5 2.4" stroke="#FF7A2E" stroke-width="1.3" fill="none" stroke-linecap="round"/><g class="tears"><path d="M19.6 28.6c-.9 1.6-1.4 2.6-1.4 3.3a1.4 1.4 0 0 0 2.8 0c0-.7-.5-1.7-1.4-3.3z" fill="#7FC4FF"/><path d="M28.4 28.6c-.9 1.6-1.4 2.6-1.4 3.3a1.4 1.4 0 0 0 2.8 0c0-.7-.5-1.7-1.4-3.3z" fill="#7FC4FF"/></g><circle cx="7.5" cy="30" r="1" fill="#FF6A3D"/><circle cx="41" cy="21" r="1.2" fill="#FF6A3D"/><circle cx="39.5" cy="35" r=".8" fill="#FFA060"/></svg></span></div><span id="weekPill" class="pill"></span></div>
     </div>
     <nav class="tabs" role="tablist">
       <button id="tab-sched" role="tab" data-tab="sched"><span class="wide">Расписание</span><span class="short">Пары</span></button>
@@ -307,6 +326,7 @@ h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wra
   <main id="view"></main>
   <p class="foot" id="sync">Данные сохраняются на этом устройстве</p>
 </div>
+<div id="dim" aria-hidden="true"></div>
 <div id="modal" class="modal" hidden></div>
 
 <script>
@@ -750,6 +770,66 @@ function adopt(r){const m=migrate(JSON.parse(JSON.stringify(r)));if(!m)return;st
   }catch(e){clearTimeout(slow);setSync('Данные сохраняются на этом устройстве')}
 })();
 
+// ---------- гроза под музыку ----------
+const storm=(()=>{
+  let cv=null,ctx=null,flash=null,drops=[],raf=0,on=false,level=0,last=0,nextBolt=0,bolt=null;
+  const rm=()=>window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+  function resize(){if(!cv)return;const d=Math.min(window.devicePixelRatio||1,2);cv.width=innerWidth*d;cv.height=innerHeight*d;ctx.setTransform(d,0,0,d,0,0)}
+  function setup(){
+    if(cv)return;
+    cv=document.createElement('canvas');cv.id='rain';cv.setAttribute('aria-hidden','true');document.body.appendChild(cv);ctx=cv.getContext('2d');
+    flash=document.createElement('div');flash.id='flash';flash.setAttribute('aria-hidden','true');document.body.appendChild(flash);
+    resize();addEventListener('resize',resize);
+  }
+  const drop=(W,H,init)=>({x:rnd(-W*.25,W),y:init?rnd(-H,H):rnd(-80,-10),v:rnd(750,1150),l:rnd(12,24)});
+  function start(){
+    document.documentElement.classList.add('storm');
+    if(rm())return;
+    setup();on=true;nextBolt=performance.now()+rnd(1200,2800);
+    if(!raf){last=performance.now();raf=requestAnimationFrame(step)}
+  }
+  function stop(){document.documentElement.classList.remove('storm');on=false}
+  function strike(W,H){
+    const pts=[];let x=rnd(.15,.85)*W,y=-5;const end=H*rnd(.4,.7);
+    pts.push([x,y]);while(y<end){y+=rnd(14,34);x+=rnd(-24,24);pts.push([x,y])}
+    const br=[];for(let k=0;k<2;k++){const i=Math.floor(rnd(2,pts.length-2));let[bx,by]=pts[i];const dir=Math.random()<.5?-1:1;const b=[[bx,by]];for(let j=0;j<4;j++){bx+=dir*rnd(8,22);by+=rnd(10,24);b.push([bx,by])}br.push(b)}
+    bolt={pts,br,t:0};
+    if(flash.animate)flash.animate([{opacity:0},{opacity:.55,offset:.07},{opacity:.08,offset:.22},{opacity:.35,offset:.32},{opacity:0}],{duration:750,easing:'ease-out'});
+    const app=document.querySelector('.app');
+    if(app&&app.animate)app.animate([{transform:'translate(0,0)'},{transform:'translate(-2px,1px)'},{transform:'translate(2px,-1px)'},{transform:'translate(-1px,0)'},{transform:'translate(0,0)'}],{duration:320,delay:120});
+  }
+  function line(p){ctx.beginPath();ctx.moveTo(p[0][0],p[0][1]);for(let i=1;i<p.length;i++)ctx.lineTo(p[i][0],p[i][1]);ctx.stroke()}
+  function step(now){
+    const dt=Math.min(.05,(now-last)/1000);last=now;
+    level=Math.max(0,Math.min(1,level+(on?1:-1)*dt/1.6));
+    const W=innerWidth,H=innerHeight;ctx.clearRect(0,0,W,H);
+    const dark=document.documentElement.dataset.side==='dark';
+    const target=Math.round(level*Math.min(230,W*H/2000));
+    while(drops.length<target)drops.push(drop(W,H,drops.length<target*.8&&level<.2));
+    if(drops.length>target)drops.length=target;
+    ctx.strokeStyle=dark?'rgba(215,205,235,.36)':'rgba(35,65,120,.40)';ctx.lineWidth=1.2;ctx.lineCap='round';
+    ctx.beginPath();
+    for(const d of drops){
+      d.y+=d.v*dt;d.x+=d.v*dt*.2;
+      if(d.y>H+30||d.x>W+30)Object.assign(d,drop(W,H,false));
+      ctx.moveTo(d.x,d.y);ctx.lineTo(d.x-d.l*.2,d.y-d.l);
+    }
+    ctx.stroke();
+    if(on&&now>nextBolt){strike(W,H);nextBolt=now+rnd(4500,9500)}
+    if(bolt){
+      bolt.t+=dt;const a=Math.max(0,1-bolt.t/.4)*(bolt.t>.07&&bolt.t<.13?.25:1);
+      ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+      ctx.shadowColor=dark?'rgba(255,90,60,.95)':'rgba(150,190,255,.95)';ctx.shadowBlur=18;
+      ctx.strokeStyle=`rgba(255,255,255,${a})`;ctx.lineWidth=2.6;line(bolt.pts);
+      ctx.lineWidth=1.2;bolt.br.forEach(line);ctx.restore();
+      if(bolt.t>.4)bolt=null;
+    }
+    if(level>0||bolt)raf=requestAnimationFrame(step);else{raf=0;ctx.clearRect(0,0,W,H)}
+  }
+  return {start,stop};
+})();
+
 // ---------- музыка ----------
 const MUSIC_SRC='music.mp3';
 (function(){
@@ -757,7 +837,7 @@ const MUSIC_SRC='music.mp3';
   let on=true;try{on=localStorage.getItem('diary.music')!=='off'}catch(e){}
   const a=new Audio();a.loop=true;a.volume=.6;a.preload='auto';
   const upd=()=>{const p=!a.paused;btn.setAttribute('aria-pressed',p);btn.title=p?'Выключить музыку':'Включить музыку'};
-  a.addEventListener('play',upd);a.addEventListener('pause',upd);
+  a.addEventListener('play',()=>{upd();storm.start()});a.addEventListener('pause',()=>{upd();storm.stop()});
   a.addEventListener('error',()=>{btn.hidden=true;off()});
   a.src=MUSIC_SRC;
   const tryPlay=()=>{const pr=a.play();return pr&&pr.then?pr:Promise.resolve()};
