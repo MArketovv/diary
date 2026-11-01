@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Дневник">
-<meta name="theme-color" content="#FFF6D6" id="themeColor">
+<meta name="theme-color" content="#FBE9AE" id="themeColor">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 <title>Учебный дневник</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -68,7 +68,7 @@
 :root{--glow:transparent;--glow2:transparent;transition-property:--bg,--surface,--surface-2,--ink,--muted,--line,--accent,--accent-ink,--accent-soft,--num,--den,--den-soft,--num-soft,--bad,--bad-soft,--warn,--warn-soft,--ok,--ok-soft,--lec,--prac,--lab,--glow,--glow2;transition-duration:.9s;transition-timing-function:cubic-bezier(.4,0,.2,1);}
 :root.no-tr{transition:none!important}
 html:root[data-side="light"]{
-  --bg:#FFF6D6; --surface:#FFFFFF; --surface-2:#FFF0C0; --ink:#22311A; --muted:#6C7350; --line:#F0DB97;
+  --bg:#FBE9AE; --surface:#FFFFFF; --surface-2:#FFF4D2; --ink:#1C2914; --muted:#4F5636; --line:#DDBE5E;
   --accent:#F2AE00; --accent-ink:#2A2306; --accent-soft:#FFE48F;
   --num:#FFFFFF; --num-soft:#4C9A38; --den:#22311A; --den-soft:#FFFFFF;
   --bad:#D9480F; --bad-soft:#22311A; --warn:#B7791F; --warn-soft:#FFE3A0; --ok:#2E7D32; --ok-soft:#DDF3CF;
@@ -83,6 +83,11 @@ html:root[data-side="dark"]{
   --lec:#FF6B4A; --prac:#E8A87C; --lab:#C9604D;
   --glow:rgba(205,30,12,.42); --glow2:rgba(110,8,4,.55); color-scheme:dark;
 }
+html:root[data-side="light"] :is(.lesson,.day,.stats,.hwcard,.empty,.iconbtn,.ghost){box-shadow:0 1px 0 rgba(140,100,0,.10),0 6px 16px -6px rgba(150,105,0,.28)}
+html:root[data-side="light"] .tabs{background:#F6DC8A}
+html:root[data-side="light"] .time{background:#FFF0BE}
+html:root[data-side="light"] .brk{color:#4F5636}
+html:root[data-side="light"] .brk::before,html:root[data-side="light"] .brk::after{border-top-color:#C9A23C}
 #deco{position:fixed;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(120% 55% at 50% -12%,var(--glow),transparent 62%),radial-gradient(70% 45% at 105% 105%,var(--glow2),transparent 70%)}
 #fx{position:fixed;inset:0;z-index:30;pointer-events:none}
@@ -214,6 +219,21 @@ h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wra
 
 .tabs .short{display:none}
 .brand-l{display:flex;align-items:center;gap:10px}
+.gwrap{display:flex;align-items:center;gap:6px}
+.mascot{width:42px;height:42px;flex:none;display:block;transition:filter .7s,opacity .7s,transform .7s}
+.mascot svg{width:100%;height:100%;display:block;overflow:visible}
+.mascot.off{filter:grayscale(1);opacity:.4;transform:scale(.85)}
+.md .eyes{filter:drop-shadow(0 0 2px #FF5A1E)}
+@media (prefers-reduced-motion:no-preference){
+  .ml:not(.off) svg{animation:bob 2.6s ease-in-out infinite}
+  .ml:not(.off) .rays{animation:spin 14s linear infinite;transform-origin:24px 27px}
+  .md:not(.off) svg{animation:hover 3.2s ease-in-out infinite}
+  .md:not(.off) .eyes{animation:flick 2.2s steps(1) infinite}
+}
+@keyframes bob{50%{transform:translateY(-3px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes hover{50%{transform:translateY(2px) rotate(-3deg)}}
+@keyframes flick{0%,100%{opacity:1}48%{opacity:1}50%{opacity:.35}53%{opacity:1}86%{opacity:.6}88%{opacity:1}}
 .mbtn{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font-size:16px;line-height:1;display:grid;place-items:center;position:relative}
 .mbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .mbtn[aria-pressed="false"]::after{content:"";position:absolute;width:22px;height:1.5px;background:currentColor;transform:rotate(-45deg)}
@@ -261,7 +281,7 @@ h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wra
   <header class="top">
     <div class="brand">
       <div class="brand-l"><h1>Дневник</h1><button id="musicBtn" class="mbtn" aria-pressed="false" title="Включить музыку" aria-label="Музыка">♪</button></div>
-      <div class="brand-r"><div class="seg" id="groupSeg" role="group" aria-label="Группа"></div><span id="weekPill" class="pill"></span></div>
+      <div class="brand-r"><div class="gwrap"><span class="mascot ml" id="mL" title="Дух света"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="sunB" cx="40%" cy="35%" r="65%"><stop offset="0" stop-color="#FFF8C2"/><stop offset=".6" stop-color="#FFC93C"/><stop offset="1" stop-color="#F0960C"/></radialGradient></defs><g class="rays" stroke="#F0A800" stroke-width="2.4" stroke-linecap="round"><path d="M40 27h4.5M8 27H3.5M24 43v4.5M35.3 38.3l3.2 3.2M12.7 38.3l-3.2 3.2M12.7 15.7l-3.2-3.2M35.3 15.7l3.2-3.2"/></g><circle cx="24" cy="27" r="13" fill="url(#sunB)" stroke="#DB8500" stroke-width="1"/><path d="M24 14.5v-3.5" stroke="#3E8A28" stroke-width="1.3" stroke-linecap="round"/><path d="M24 11.5c.3-3.6 2.4-6 6.2-6.6-.8 3.6-3 5.8-6.2 6.6z" fill="#5DB33A"/><path d="M24 12c-.8-2.8-2.8-4.6-5.8-4.8.8 2.8 2.9 4.5 5.8 4.8z" fill="#7CC84E"/><ellipse cx="19.5" cy="26" rx="1.7" ry="2.2" fill="#3A2A05"/><ellipse cx="28.5" cy="26" rx="1.7" ry="2.2" fill="#3A2A05"/><circle cx="20.1" cy="25.2" r=".6" fill="#fff"/><circle cx="29.1" cy="25.2" r=".6" fill="#fff"/><circle cx="16.4" cy="30.2" r="2.2" fill="#FF7F5A" opacity=".55"/><circle cx="31.6" cy="30.2" r="2.2" fill="#FF7F5A" opacity=".55"/><path d="M20.5 31c1.8 2.2 5.2 2.2 7 0" stroke="#3A2A05" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg></span><div class="seg" id="groupSeg" role="group" aria-label="Группа"></div><span class="mascot md" id="mD" title="Бес тьмы"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="impB" cx="50%" cy="38%" r="62%"><stop offset="0" stop-color="#6A120A"/><stop offset=".65" stop-color="#2A0605"/><stop offset="1" stop-color="#0E0202"/></radialGradient></defs><path d="M15 18.5Q10.5 10.5 13.5 4.5Q15.5 12 20 15z" fill="#2A0805" stroke="#9E2412" stroke-width=".9" stroke-linejoin="round"/><path d="M33 18.5Q37.5 10.5 34.5 4.5Q32.5 12 28 15z" fill="#2A0805" stroke="#9E2412" stroke-width=".9" stroke-linejoin="round"/><path d="M24 12.5c8 0 13 6 13 14 0 4-1.4 7.6-3.6 10.4l1.6 5-4.2-2.4c-2 1.3-4.3 2-6.8 2s-4.8-.7-6.8-2L13 42l1.6-5C12.4 34.1 11 30.5 11 26.5c0-8 5-14 13-14z" fill="url(#impB)" stroke="#A3271A" stroke-width="1" stroke-linejoin="round"/><g class="eyes"><path d="M16.3 23.6l6.4 2.4-6.2 1.6z" fill="#FF7A2E"/><path d="M31.7 23.6l-6.4 2.4 6.2 1.6z" fill="#FF7A2E"/></g><path d="M18.5 32.6l2 1.7 1.8-1.4 1.7 1.7 1.7-1.7 1.8 1.4 2-1.7" stroke="#FF7A2E" stroke-width="1.3" fill="none" stroke-linejoin="round" stroke-linecap="round"/><circle cx="7.5" cy="30" r="1" fill="#FF6A3D"/><circle cx="41" cy="21" r="1.2" fill="#FF6A3D"/><circle cx="39.5" cy="35" r=".8" fill="#FFA060"/></svg></span></div><span id="weekPill" class="pill"></span></div>
     </div>
     <nav class="tabs" role="tablist">
       <button id="tab-sched" role="tab" data-tab="sched"><span class="wide">Расписание</span><span class="short">Пары</span></button>
@@ -430,8 +450,9 @@ const pct=(a,b)=>b?Math.round(a/b*1000)/10:0;
 
 // ---------- рендер ----------
 function render(){
+  {const mL=$('#mL'),mD=$('#mD');if(mL)mL.classList.toggle('off',state.cur!=='g1');if(mD)mD.classList.toggle('off',state.cur!=='g10')}
   document.documentElement.dataset.side=(SIDES[state.cur]||SIDES.g1).cls;
-  {const tc=document.getElementById('themeColor');if(tc)tc.content=state.cur==='g10'?'#0C0404':'#FFF6D6'}
+  {const tc=document.getElementById('themeColor');if(tc)tc.content=state.cur==='g10'?'#0C0404':'#FBE9AE'}
   for(const b of document.querySelectorAll('.tabs button'))b.setAttribute('aria-selected',b.dataset.tab===ui.tab);
   $('#groupSeg').innerHTML=Object.entries(state.groups).map(([k,g])=>{const sd=SIDES[k]||SIDES.g1;return `<button class="${sd.cls}" data-act="group" data-g="${k}" aria-pressed="${k===state.cur}" title="${sd.title}">${sd.icon}${esc(g.name)}</button>`}).join('');
   const wt=weekType(ui.sel);const pill=$('#weekPill');pill.className='pill '+wt;pill.textContent=WT_NAME[wt];
