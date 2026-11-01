@@ -148,6 +148,10 @@ h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wra
 .danger{border:1px solid var(--bad);background:transparent;color:var(--bad);border-radius:10px;padding:9px 14px;font-weight:700;margin-right:auto}
 
 .tabs .short{display:none}
+.brand-l{display:flex;align-items:center;gap:10px}
+.mbtn{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font-size:16px;line-height:1;display:grid;place-items:center;position:relative}
+.mbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.mbtn[aria-pressed="false"]::after{content:"";position:absolute;width:22px;height:1.5px;background:currentColor;transform:rotate(-45deg)}
 .brk{display:flex;align-items:center;gap:10px;padding:0 2px;color:var(--muted);font-size:13px}
 .brk::before,.brk::after{content:"";flex:1 1 12px;min-width:12px;border-top:1px dashed var(--line)}
 .brk .t{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -190,7 +194,7 @@ h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wra
 <div class="app">
   <header class="top">
     <div class="brand">
-      <h1>Дневник</h1>
+      <div class="brand-l"><h1>Дневник</h1><button id="musicBtn" class="mbtn" aria-pressed="false" title="Включить музыку" aria-label="Музыка">♪</button></div>
       <div class="brand-r"><div class="seg" id="groupSeg" role="group" aria-label="Группа"></div><span id="weekPill" class="pill"></span></div>
     </div>
     <nav class="tabs" role="tablist">
@@ -637,6 +641,34 @@ function adopt(r){const m=migrate(JSON.parse(JSON.stringify(r)));if(!m)return;st
       const r=s.data();if(r&&(r.v===1||r.v===2)&&(r.updatedAt||0)>(state.updatedAt||0))adopt(r);
     },()=>setSync('Связь с облаком потеряна, изменения сохраняются на этом устройстве'));
   }catch(e){clearTimeout(slow);setSync('Данные сохраняются на этом устройстве')}
+})();
+
+// ---------- музыка ----------
+const MUSIC_SRC='music.mp3';
+(function(){
+  const btn=$('#musicBtn');
+  let on=true;try{on=localStorage.getItem('diary.music')!=='off'}catch(e){}
+  const a=new Audio();a.loop=true;a.volume=.6;a.preload='auto';
+  const upd=()=>{const p=!a.paused;btn.setAttribute('aria-pressed',p);btn.title=p?'Выключить музыку':'Включить музыку'};
+  a.addEventListener('play',upd);a.addEventListener('pause',upd);
+  a.addEventListener('error',()=>{btn.hidden=true;off()});
+  a.src=MUSIC_SRC;
+  const tryPlay=()=>{const pr=a.play();return pr&&pr.then?pr:Promise.resolve()};
+  const evs=['touchend','click','keydown'];
+  function first(e){
+    if(e.target.closest&&e.target.closest('#musicBtn'))return;
+    if(!on||!a.paused){off();return}
+    tryPlay().then(off,()=>{});
+  }
+  function off(){evs.forEach(t=>document.removeEventListener(t,first,true))}
+  evs.forEach(t=>document.addEventListener(t,first,true));
+  btn.addEventListener('click',()=>{
+    if(a.paused){on=true;tryPlay().catch(()=>{})}else{on=false;a.pause()}
+    try{localStorage.setItem('diary.music',on?'on':'off')}catch(e){}
+    off();upd();
+  });
+  if(on)tryPlay().then(off,()=>{});
+  upd();
 })();
 
 render();
