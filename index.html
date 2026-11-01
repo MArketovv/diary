@@ -53,7 +53,27 @@ button{cursor:pointer}
 .brand{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 h1{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:-.01em;margin:0}
 .brand-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-#groupSeg button{padding:6px 12px;font-size:13px}
+/* Переключатель групп: группа 1 — силы света, группа 10 — силы тьмы. Свои цвета, одинаковые в обеих темах */
+#groupSeg{border:0;overflow:visible;border-radius:0;gap:8px;display:inline-flex}
+#groupSeg button{display:inline-flex;align-items:center;gap:6px;padding:6px 12px 6px 9px;border-radius:10px;font-family:var(--f-display);font-weight:600;font-size:12px;letter-spacing:.02em;border:1px solid;position:relative;transition:box-shadow .2s,background .2s,color .2s}
+#groupSeg button+button{border-left:1px solid}
+#groupSeg svg{width:15px;height:15px;flex:none}
+#groupSeg .light{background:rgba(150,190,100,.13);border-color:rgba(150,190,100,.6);color:var(--ink)}
+#groupSeg .light svg{color:#B08A1E}
+#groupSeg .light[aria-pressed="true"]{background:linear-gradient(160deg,#FBF4D2 0%,#D9EBB3 50%,#8DBB6C 100%);border-color:#D9B64E;color:#1F3014;
+  box-shadow:0 0 0 1px rgba(217,182,78,.55),0 0 16px rgba(232,200,96,.6),inset 0 1px 0 rgba(255,255,255,.7)}
+#groupSeg .light[aria-pressed="true"] svg{color:#A87A08;filter:drop-shadow(0 0 3px rgba(255,214,90,.9))}
+#groupSeg .dark{background:rgba(170,40,25,.12);border-color:rgba(170,40,25,.55);color:var(--ink)}
+#groupSeg .dark svg{color:#B3341F}
+#groupSeg .dark[aria-pressed="true"]{background:radial-gradient(120% 140% at 25% 15%,#7E1C11 0%,#3B0B07 55%,#140302 100%);border-color:#C23A20;color:#FFD8C4;
+  box-shadow:0 0 0 1px rgba(90,18,9,.8),0 0 16px rgba(214,58,30,.55),inset 0 1px 0 rgba(255,120,80,.25)}
+#groupSeg .dark[aria-pressed="true"] svg{color:#FF6A3D;filter:drop-shadow(0 0 3px rgba(255,90,40,.9))}
+@media (prefers-reduced-motion:no-preference){
+  #groupSeg .light[aria-pressed="true"]{animation:glowL 3.2s ease-in-out infinite}
+  #groupSeg .dark[aria-pressed="true"]{animation:glowD 3.2s ease-in-out infinite}
+}
+@keyframes glowL{50%{box-shadow:0 0 0 1px rgba(217,182,78,.7),0 0 22px rgba(232,200,96,.85),inset 0 1px 0 rgba(255,255,255,.7)}}
+@keyframes glowD{50%{box-shadow:0 0 0 1px rgba(90,18,9,.9),0 0 22px rgba(230,70,35,.8),inset 0 1px 0 rgba(255,120,80,.25)}}
 .pill{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
 .pill.num{background:var(--num-soft);color:var(--num)}
 .pill.den{background:var(--den-soft);color:var(--den);box-shadow:inset 0 0 0 1.5px var(--ink)}
@@ -256,6 +276,10 @@ const CURRICULUM=[C('Математический анализ',1,1,0,'экз'),
   C('Элективные дисциплины по физической культуре и спорту',0,1,0,'зач'),C('Пропедевтический курс физики',0,2,0,'зач',{late:1}),C('Пропедевтический курс математики',0,2,0,'зач',{late:1}),C('Пропедевтический курс инженерной графики',0,2,0,'зач',{late:1})];
 const CUR_BY=Object.fromEntries(CURRICULUM.map(c=>[c.n,c]));
 const BIG=50;
+const SIDES={
+  g1:{cls:'light',title:'Силы света',icon:'<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.1" fill="currentColor"/><path d="M8 .9v2.2M8 12.9v2.2M.9 8h2.2M12.9 8h2.2M3 3l1.5 1.5M11.5 11.5L13 13M3 13l1.5-1.5M11.5 4.5L13 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>'},
+  g10:{cls:'dark',title:'Силы тьмы',icon:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.6 1.6A6.4 6.4 0 1 0 14.4 11 5.2 5.2 0 0 1 10.6 1.6z" fill="currentColor"/><path d="M13.6 2.2l.5 1.2 1.2.5-1.2.5-.5 1.2-.5-1.2-1.2-.5 1.2-.5z" fill="currentColor"/></svg>'}
+};
 const SLOTS={'08:15':1,'09:55':2,'11:35':3,'13:55':4,'15:35':5,'17:15':6};
 const TYPES=['Лекция','Практика','Лабораторная'];
 const ANCHOR=new Date(2026,10,2); // Пн 2 ноября 2026 — знаменатель
@@ -361,7 +385,7 @@ const pct=(a,b)=>b?Math.round(a/b*1000)/10:0;
 // ---------- рендер ----------
 function render(){
   for(const b of document.querySelectorAll('.tabs button'))b.setAttribute('aria-selected',b.dataset.tab===ui.tab);
-  $('#groupSeg').innerHTML=Object.entries(state.groups).map(([k,g])=>`<button class="${k===state.cur?'on-u':''}" data-act="group" data-g="${k}" aria-pressed="${k===state.cur}">${esc(g.name)}</button>`).join('');
+  $('#groupSeg').innerHTML=Object.entries(state.groups).map(([k,g])=>{const sd=SIDES[k]||SIDES.g1;return `<button class="${sd.cls}" data-act="group" data-g="${k}" aria-pressed="${k===state.cur}" title="${sd.title}">${sd.icon}${esc(g.name)}</button>`}).join('');
   const wt=weekType(ui.sel);const pill=$('#weekPill');pill.className='pill '+wt;pill.textContent=WT_NAME[wt];
   const open=G().hw.filter(h=>!h.done).length;
   $('#hwCount').innerHTML=open?`<span class="badge">${open}</span>`:'';
