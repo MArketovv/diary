@@ -57,8 +57,8 @@ h1{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:-.
 .pill{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
 .pill.num{background:var(--num-soft);color:var(--num)}
 .pill.den{background:var(--den-soft);color:var(--den);box-shadow:inset 0 0 0 1.5px var(--ink)}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
-.tabs button{border:0;background:transparent;border-radius:9px;padding:9px 6px;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px}
+.tabs{display:flex;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
+.tabs button{flex:1 1 auto;white-space:nowrap;border:0;background:transparent;border-radius:9px;padding:9px 6px;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px}
 .tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .badge{font-family:var(--f-mono);font-size:11px;padding:1px 6px;border-radius:6px;background:var(--accent-soft);color:var(--ink)}
 .badge.bad{background:var(--ink);color:var(--bg)}
@@ -146,7 +146,37 @@ h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wra
 .sheet h3{margin:0;font-family:var(--f-display);font-weight:500;font-size:17px}
 .sheet .btns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 .danger{border:1px solid var(--bad);background:transparent;color:var(--bad);border-radius:10px;padding:9px 14px;font-weight:700;margin-right:auto}
+
+.tabs .short{display:none}
+.brk{display:flex;align-items:center;gap:10px;padding:0 2px;color:var(--muted);font-size:13px}
+.brk::before,.brk::after{content:"";flex:1 1 12px;min-width:12px;border-top:1px dashed var(--line)}
+.brk .t{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.brk.shared{color:var(--ink);font-weight:600}
+.brk.shared::before,.brk.shared::after{border-top:1.5px solid var(--ink)}
+.brk .tag{background:var(--ink);color:var(--bg);border-radius:999px;padding:4px 11px;font-weight:700;font-size:12px}
+.day .sh{position:absolute;top:8px;left:8px;width:7px;height:7px;border:1.5px solid currentColor;transform:rotate(45deg)}
+.legend{margin:-6px 0 0;font-size:12px;display:flex;gap:4px 14px;flex-wrap:wrap}
+.legend i{display:inline-block;width:7px;height:7px;margin-right:6px;vertical-align:1px}
+.legend .lsh{border:1.5px solid currentColor;transform:rotate(45deg)}
+.legend .lhw{border-radius:50%;background:currentColor}
+.att{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--ink);color:var(--ink);border-radius:5px;padding:0 5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;background:var(--surface-2);white-space:nowrap}
+.chip b{font-family:var(--f-mono)}
+.chip.solid{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.prog{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+.prog i{display:block;height:100%;background:var(--ink)}
+.disc{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:12px 0;border-top:1px solid var(--line);align-items:start}
+.disc:first-child{border-top:0}
+.disc .n{font-weight:600;min-width:0}
+.disc .b{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.disc .h{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:2px 14px;font-size:12px;color:var(--muted);font-family:var(--f-mono)}
+.info h2{font-size:16px}
+.info dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:14px}
+.info dt{color:var(--muted)} .info dd{margin:0;min-width:0}
 @media (max-width:440px){
+  .tabs button{font-size:13px;padding:9px 5px;gap:4px}
+  .tabs .wide{display:none} .tabs .short{display:inline}
   .lesson{grid-template-columns:64px 1fr}
   .time b{font-size:14px}.time span{font-size:12px}
   .kv{grid-template-columns:repeat(2,1fr)}
@@ -164,9 +194,10 @@ h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wra
       <div class="brand-r"><div class="seg" id="groupSeg" role="group" aria-label="Группа"></div><span id="weekPill" class="pill"></span></div>
     </div>
     <nav class="tabs" role="tablist">
-      <button id="tab-sched" role="tab" data-tab="sched">Расписание</button>
+      <button id="tab-sched" role="tab" data-tab="sched"><span class="wide">Расписание</span><span class="short">Пары</span></button>
       <button id="tab-hw" role="tab" data-tab="hw">ДЗ <span id="hwCount"></span></button>
       <button id="tab-abs" role="tab" data-tab="abs">Пропуски <span id="absPct"></span></button>
+      <button id="tab-sem" role="tab" data-tab="sem">Семестр</button>
     </nav>
   </header>
   <main id="view"></main>
@@ -214,6 +245,13 @@ const DEF_SCHEDULE_10 = {
     6:[]
   }
 };
+const PROGRAM={uni:'МАДИ',profile:'6СТР — Строительство автомобильных дорог, автодорожных мостов и тоннелей, аэродромов (0803017)',level:'Бакалавриат',form:'дневная',year:'2026–2027',term:'1 курс, осенний семестр',weeks:17,standard:'3++'};
+function C(n,lec,pr,lab,att,o){return Object.assign({n,lec,pr,lab,att},o||{})}
+const CURRICULUM=[C('Математический анализ',1,1,0,'экз'),C('Инженерная графика',1,2,0,'экз',{rgr:1}),C('Физика',1,1,1,'экз',{rgr:1}),C('Геодезия',2,1,1,'экз',{kr:1}),
+  C('История России',2,2,0,'зач'),C('Философия',1,2,0,'зач'),C('Иностранный язык',0,2,0,'зач'),C('Геология',1,1,0,'зач',{kr:1}),C('Физическая культура и спорт',1,0,0,'зач'),C('Основы российской государственности',1,2,0,'зач'),
+  C('Элективные дисциплины по физической культуре и спорту',0,1,0,'зач'),C('Пропедевтический курс физики',0,2,0,'зач',{late:1}),C('Пропедевтический курс математики',0,2,0,'зач',{late:1}),C('Пропедевтический курс инженерной графики',0,2,0,'зач',{late:1})];
+const CUR_BY=Object.fromEntries(CURRICULUM.map(c=>[c.n,c]));
+const BIG=50;
 const SLOTS={'08:15':1,'09:55':2,'11:35':3,'13:55':4,'15:35':5,'17:15':6};
 const TYPES=['Лекция','Практика','Лабораторная'];
 const ANCHOR=new Date(2026,10,2); // Пн 2 ноября 2026 — знаменатель
@@ -250,9 +288,27 @@ function weekType(d){
   let den=((w%2)+2)%2===0; if(state.flip)den=!den; return den?'den':'num';
 }
 const WT_NAME={num:'числитель',den:'знаменатель'};
-function lessonsFor(d){
+function lessonsForG(g,d){
   const dow=d.getDay(); if(!dow)return [];
-  return ((G().schedule[weekType(d)]||{})[dow]||[]).slice().sort((a,b)=>a.s.localeCompare(b.s));
+  return ((g.schedule[weekType(d)]||{})[dow]||[]).slice().sort((a,b)=>a.s.localeCompare(b.s));
+}
+function lessonsFor(d){return lessonsForG(G(),d)}
+const toMin=t=>{const[h,m]=t.split(':').map(Number);return h*60+m};
+const fromMin=m=>pad(Math.floor(m/60))+':'+pad(m%60);
+function bigGaps(ls){const r=[];for(let i=1;i<ls.length;i++){const a=toMin(ls[i-1].e),b=toMin(ls[i].s);if(b-a>=BIG)r.push({a,b,after:i-1})}return r}
+function sharedWith(d,gap){
+  const out=[];
+  for(const [k,g] of Object.entries(state.groups)){
+    if(k===state.cur)continue;
+    for(const o of bigGaps(lessonsForG(g,d))){const s=Math.max(gap.a,o.a),e=Math.min(gap.b,o.b);if(e-s>=BIG){out.push({name:g.name,s,e});break}}
+  }
+  return out;
+}
+const plural=(n,a,b,c)=>{const m10=n%10,m100=n%100;return m10===1&&m100!==11?a:m10>=2&&m10<=4&&(m100<12||m100>14)?b:c};
+function breakRow(d,g){
+  const sh=sharedWith(d,g),len=g.b-g.a,label=len<=BIG+5?'Большая перемена':'Окно '+len+' мин';
+  if(sh.length){const x=sh[0];return `<div class="brk shared"><span class="tag">${len<=BIG+5?'Общая перемена':'Общее окно'} с ${esc(sh.map(s=>s.name.replace(/^Группа/,'группой')).join(', '))}</span><span class="t">${fromMin(x.s)}–${fromMin(x.e)}</span></div>`}
+  return `<div class="brk"><span>${label}</span><span class="t">${fromMin(g.a)}–${fromMin(g.b)}</span></div>`;
 }
 function startedOrPast(d,l){const t=todayD();if(d<t)return true;if(d>t)return false;return l.s<=nowHM()}
 function heldYet(d,l){const t=todayD();if(d<t)return true;if(d>t)return false;return l.e<=nowHM()}
@@ -306,8 +362,8 @@ function render(){
   const open=G().hw.filter(h=>!h.done).length;
   $('#hwCount').innerHTML=open?`<span class="badge">${open}</span>`:'';
   const st=stats();const p=pct(st.u+st.r,st.held);
-  $('#absPct').innerHTML=st.held?`<span class="badge ${p>=25?'bad':''}">${p}%</span>`:'';
-  $('#view').innerHTML=ui.tab==='sched'?viewSched():ui.tab==='hw'?viewHW():viewAbs(st);
+  $('#absPct').innerHTML=st.held?`<span class="badge ${p>=25?'bad':''}">${Math.round(p)}%</span>`:'';
+  $('#view').innerHTML=ui.tab==='sched'?viewSched():ui.tab==='hw'?viewHW():ui.tab==='sem'?viewSem(st):viewAbs(st);
 }
 
 function viewSched(){
@@ -317,11 +373,13 @@ function viewSched(){
   for(let i=0;i<6;i++){
     const d=addDays(mon,i),n=lessonsFor(d).length,ds=ymd(d);
     const hasHw=G().hw.some(h=>!h.done&&h.due===ds);
+    const hasSh=bigGaps(lessonsFor(d)).some(g=>sharedWith(d,g).length);
     days+=`<button class="day ${+d===+t?'today':''}" aria-pressed="${+d===+ui.sel}" data-act="pick" data-date="${ds}">
-      ${hasHw?'<span class="dot" title="Есть ДЗ"></span>':''}<span class="dw">${DOW_S[d.getDay()]}</span><span class="dn">${d.getDate()}</span><span class="dc">${n?n+' п.':'—'}</span></button>`;
+      ${hasHw?'<span class="dot" title="Есть ДЗ"></span>':''}${hasSh?'<span class="sh" title="Общая перемена"></span>':''}<span class="dw">${DOW_S[d.getDay()]}</span><span class="dn">${d.getDate()}</span><span class="dc">${n?n+' п.':'—'}</span></button>`;
   }
   const d=ui.sel,ls=lessonsFor(d),ds=ymd(d);
-  const cards=ls.map(l=>lessonCard(l,d,ds)).join('');
+  const gaps=bigGaps(ls);
+  const cards=ls.map((l,i)=>{const g=gaps.find(x=>x.after===i);return lessonCard(l,d,ds)+(g?breakRow(d,g):'')}).join('');
   return `
   <div class="weeknav">
     <button class="iconbtn" data-act="wk" data-n="-1" aria-label="Предыдущая неделя">‹</button>
@@ -329,6 +387,7 @@ function viewSched(){
     <button class="iconbtn" data-act="wk" data-n="1" aria-label="Следующая неделя">›</button>
   </div>
   <div class="days">${days}</div>
+  <p class="note legend"><span><i class="lsh"></i>общая перемена с ${esc(Object.entries(state.groups).filter(([k])=>k!==state.cur).map(([,g])=>g.name.replace(/^Группа/,'группой')).join(', '))}</span><span><i class="lhw"></i>есть ДЗ</span></p>
   <div class="dayhead">
     <h2>${d.getDay()?DOW[d.getDay()]:'Воскресенье'}, ${d.getDate()} ${MON_G[d.getMonth()]}</h2>
     <div class="actions">
@@ -379,7 +438,7 @@ function lessonCard(l,d,ds){
     <div class="time"><span class="pair">${isNow?'идёт':slot?slot+' пара':'пара'}</span><b>${l.s}</b><span>${l.e}</span></div>
     <div class="lbody">
       <h3>${esc(l.name)}</h3>
-      <div class="meta"><span class="type ${typeCls(l.type)}">${esc(l.type)}</span>${l.teacher?`<span>${esc(l.teacher)}</span>`:''}${l.room?`<span>ауд. ${esc(l.room)}</span>`:''}</div>
+      <div class="meta"><span class="type ${typeCls(l.type)}">${esc(l.type)}</span>${l.teacher?`<span>${esc(l.teacher)}</span>`:''}${l.room?`<span>ауд. ${esc(l.room)}</span>`:''}${CUR_BY[l.name]&&CUR_BY[l.name].att==='экз'?'<span class="att">экзамен</span>':''}</div>
       ${hwHtml}
       <div class="actions">
         <button class="ghost small" data-act="hw-add" data-subj="${esc(l.name)}" data-date="${ds}">+ ДЗ на след. пару</button>
@@ -403,6 +462,30 @@ function viewHW(){
     <div class="seg" role="group"><button class="${ui.hwFilter==='open'?'on-ok':''}" data-act="hwf" data-v="open">Активные</button><button class="${ui.hwFilter==='done'?'on-ok':''}" data-act="hwf" data-v="done">Выполненные</button></div>
     <button class="primary" data-act="hw-add">+ Задание</button></div>
     ${html||`<div class="empty">${ui.hwFilter==='open'?'Активных заданий нет. Добавь через «+ Задание» или кнопкой «+ ДЗ» у пары в расписании.':'Пока ничего не выполнено'}</div>`}`;
+}
+
+function viewSem(st){
+  const P=PROGRAM,start=mondayOf(parse(G().start||'2026-09-01')),t=todayD();
+  let wk=Math.floor(Math.round((mondayOf(t)-start)/864e5)/7)+1;wk=Math.max(0,Math.min(P.weeks,wk));
+  const end=addDays(start,P.weeks*7-2);
+  const ex=CURRICULUM.filter(c=>c.att==='экз'),zc=CURRICULUM.filter(c=>c.att!=='экз'),kr=CURRICULUM.filter(c=>c.kr),rgr=CURRICULUM.filter(c=>c.rgr);
+  const badges=c=>`${c.att==='экз'?'<span class="chip solid">Экзамен</span>':'<span class="chip">Зачёт</span>'}${c.kr?'<span class="chip">Курсовая</span>':''}${c.rgr?'<span class="chip">РГР</span>':''}`;
+  const hrs=c=>[['лек',c.lec],['пр',c.pr],['лаб',c.lab]].filter(x=>x[1]).map(x=>x[0]+' '+x[1]).join(' · ')+' ч/нед';
+  const row=c=>{const s=st.subj[c.n];return `<div class="disc"><span class="n">${esc(c.n)}${c.late?'<br><span class="note" style="font-weight:500">начинается на месяц позже</span>':''}</span><span class="b">${badges(c)}</span>
+    <div class="h"><span>${hrs(c)}</span>${s?`<span>пропущено ${s.u+s.r} из ${s.held}</span>`:''}</div></div>`};
+  return `<section class="stats info">
+    <div class="ghead">${P.uni} · ${P.year} учебный год</div>
+    <h2>${esc(P.profile)}</h2>
+    <dl><dt>Курс</dt><dd>${P.term}</dd><dt>Уровень</dt><dd>${P.level}, ${P.form} форма</dd><dt>Стандарт</dt><dd>ФГОС ${P.standard}</dd><dt>Длительность</dt><dd>${P.weeks} недель</dd></dl>
+  </section>
+  <section class="stats">
+    <div class="big"><span class="pct">${wk}<span style="font-size:22px;color:var(--muted)">/${P.weeks}</span></span><span class="note">учебная неделя<br>${P.weeks}-я неделя закончится ≈ ${end.getDate()} ${MON_G[end.getMonth()]}</span></div>
+    <div class="prog" role="progressbar" aria-valuenow="${wk}" aria-valuemin="0" aria-valuemax="${P.weeks}"><i style="width:${wk/P.weeks*100}%"></i></div>
+    <div class="chips"><span class="chip solid"><b>${ex.length}</b> ${plural(ex.length,'экзамен','экзамена','экзаменов')}</span><span class="chip"><b>${zc.length}</b> ${plural(zc.length,'зачёт','зачёта','зачётов')}</span><span class="chip"><b>${kr.length}</b> ${plural(kr.length,'курсовая','курсовые','курсовых')}</span><span class="chip"><b>${rgr.length}</b> РГР</span></div>
+  </section>
+  <section class="stats"><div class="ghead">Экзамены</div><div>${ex.map(row).join('')}</div></section>
+  <section class="stats"><div class="ghead">Зачёты</div><div>${zc.map(row).join('')}</div></section>
+  <p class="note" style="margin:0">Часы академические, в неделю: 2 ч — пара каждую неделю, 1 ч — пара раз в две недели. Пропуски — по выбранной группе. Неделя семестра считается от даты «Считать пары с» на вкладке «Пропуски».</p>`;
 }
 
 function viewAbs(st){
