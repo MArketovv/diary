@@ -52,6 +52,8 @@ button{cursor:pointer}
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:16px 10px;display:grid;gap:12px}
 .brand{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 h1{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:-.01em;margin:0}
+.brand-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#groupSeg button{padding:6px 12px;font-size:13px}
 .pill{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
 .pill.num{background:var(--num-soft);color:var(--num)}
 .pill.den{background:var(--den-soft);color:var(--den);box-shadow:inset 0 0 0 1.5px var(--ink)}
@@ -158,7 +160,7 @@ h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wra
   <header class="top">
     <div class="brand">
       <h1>Дневник</h1>
-      <span id="weekPill" class="pill"></span>
+      <div class="brand-r"><div class="seg" id="groupSeg" role="group" aria-label="Группа"></div><span id="weekPill" class="pill"></span></div>
     </div>
     <nav class="tabs" role="tablist">
       <button id="tab-sched" role="tab" data-tab="sched">Расписание</button>
@@ -192,6 +194,25 @@ const DEF_SCHEDULE = {
     6:[L('n6a','08:15','09:45','Пропедевтический курс физики','Практика','','368'),L('n6b','09:55','11:25','Пропедевтический курс инженерной графики','Практика','','356')]
   }
 };
+const DEF_SCHEDULE_10 = {
+  den:{
+    1:[L('xd1a','09:55','11:25','Физика','Лабораторная','','257'),L('xd1b','11:35','13:05','Философия','Практика','Зубков В.П.','368'),L('xd1c','13:55','15:25','Геодезия','Лабораторная','','409'),L('xd1d','15:35','17:05','Инженерная графика','Практика','','354')],
+    2:[L('xd2a','11:35','13:05','История России','Лекция','Сологян А.А.','цадиЛ'),L('xd2b','13:55','15:25','Философия','Лекция','Зубков В.П.','цадиЛ')],
+    3:[L('xd3a','08:15','09:45','Пропедевтический курс математики','Практика','Солиев Ю.','536'),L('xd3b','09:55','11:25','Иностранный язык','Практика'),L('xd3c','11:35','13:05','История России','Практика','Кулешова Н.Ю.','536')],
+    4:[L('xd4a','11:35','13:05','Геодезия','Лекция','Гулин В.Н.','цадиЛ'),L('xd4b','13:55','15:25','Основы российской государственности','Лекция','Махаматов Т.','цадиЛ'),L('xd4c','16:15','17:45','Элективные дисциплины по физической культуре и спорту','Практика')],
+    5:[L('xd5a','08:15','09:45','Основы российской государственности','Практика','Махаматов Т.','373'),L('xd5b','09:55','11:25','Математический анализ','Практика','Колчин А.В.','517'),L('xd5c','11:35','13:05','Пропедевтический курс физики','Практика','','376'),L('xd5d','13:55','15:25','Пропедевтический курс инженерной графики','Практика','','356')],
+    6:[]
+  },
+  num:{
+    1:[L('xn1a','09:55','11:25','Физика','Практика','','516'),L('xn1b','11:35','13:05','Философия','Практика','Зубков В.П.','368'),L('xn1c','13:55','15:25','Геодезия','Практика','','409'),L('xn1d','15:35','17:05','Инженерная графика','Практика','','354')],
+    2:[L('xn2a','09:55','11:25','Математический анализ','Лекция','Колчин А.В.','цадиЛ'),L('xn2b','11:35','13:05','История России','Лекция','Сологян А.А.','цадиЛ'),L('xn2c','13:55','15:25','Физика','Лекция','Спиридонова Л.В.','цадиЛ')],
+    3:[L('xn3a','08:15','09:45','Пропедевтический курс математики','Практика','Солиев Ю.','536'),L('xn3b','09:55','11:25','Иностранный язык','Практика'),L('xn3c','11:35','13:05','История России','Практика','Кулешова Н.Ю.','536')],
+    // четверг числителя не было на скринах: взяты лекции потока из группы 1, проверить
+    4:[L('xn4a','09:55','11:25','Геология','Лекция','Емельянов С.Н.','цадиЛ'),L('xn4b','11:35','13:05','Геодезия','Лекция','Гулин В.Н.','цадиЛ'),L('xn4c','13:55','15:25','Инженерная графика','Лекция','Мансурова Е.В.','цадиЛ'),L('xn4d','16:15','17:45','Физическая культура и спорт','Лекция')],
+    5:[L('xn5a','08:15','09:45','Основы российской государственности','Практика','Махаматов Т.','373'),L('xn5b','09:55','11:25','Геология','Практика','','234'),L('xn5c','11:35','13:05','Пропедевтический курс физики','Практика','','376'),L('xn5d','13:55','15:25','Пропедевтический курс инженерной графики','Практика','','356')],
+    6:[]
+  }
+};
 const SLOTS={'08:15':1,'09:55':2,'11:35':3,'13:55':4,'15:35':5,'17:15':6};
 const TYPES=['Лекция','Практика','Лабораторная'];
 const ANCHOR=new Date(2026,10,2); // Пн 2 ноября 2026 — знаменатель
@@ -202,9 +223,18 @@ const MON_G=['января','февраля','марта','апреля','мая
 const MON_S=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','нояб','дек'];
 
 // ---------- состояние ----------
-function fresh(){return {v:1,schedule:JSON.parse(JSON.stringify(DEF_SCHEDULE)),hw:[],abs:{},start:'2026-09-01',flip:false,updatedAt:0}}
+function freshGroup(name,sch){return {name,schedule:JSON.parse(JSON.stringify(sch)),hw:[],abs:{},start:'2026-09-01'}}
+function fresh(){return {v:2,cur:'g1',groups:{g1:freshGroup('Группа 1',DEF_SCHEDULE),g10:freshGroup('Группа 10',DEF_SCHEDULE_10)},flip:false,updatedAt:0}}
+function migrate(s){
+  if(!s)return null;
+  const f=fresh();
+  if(s.v===2){s.groups=Object.assign(f.groups,s.groups||{});const r=Object.assign(f,s);if(!r.groups[r.cur])r.cur='g1';return r}
+  if(s.v===1){Object.assign(f.groups.g1,{schedule:s.schedule||f.groups.g1.schedule,hw:s.hw||[],abs:s.abs||{},start:s.start||'2026-09-01'});f.flip=!!s.flip;f.updatedAt=s.updatedAt||0;return f}
+  return null;
+}
 let state=fresh();
-try{const raw=localStorage.getItem(LS);if(raw){const s=JSON.parse(raw);if(s&&s.v===1)state=Object.assign(fresh(),s)}}catch(e){}
+function G(){return state.groups[state.cur]||state.groups.g1}
+try{const raw=localStorage.getItem(LS);if(raw){const m=migrate(JSON.parse(raw));if(m)state=m}}catch(e){}
 
 // ---------- даты ----------
 const pad=n=>String(n).padStart(2,'0');
@@ -221,7 +251,7 @@ function weekType(d){
 const WT_NAME={num:'числитель',den:'знаменатель'};
 function lessonsFor(d){
   const dow=d.getDay(); if(!dow)return [];
-  return ((state.schedule[weekType(d)]||{})[dow]||[]).slice().sort((a,b)=>a.s.localeCompare(b.s));
+  return ((G().schedule[weekType(d)]||{})[dow]||[]).slice().sort((a,b)=>a.s.localeCompare(b.s));
 }
 function startedOrPast(d,l){const t=todayD();if(d<t)return true;if(d>t)return false;return l.s<=nowHM()}
 function heldYet(d,l){const t=todayD();if(d<t)return true;if(d>t)return false;return l.e<=nowHM()}
@@ -241,7 +271,7 @@ const typeCls=t=>t==='Лекция'?'t-lec':t==='Лабораторная'?'t-la
 
 function allSubjects(){
   const set=new Set();
-  for(const wt of ['num','den'])for(const k in state.schedule[wt])for(const l of state.schedule[wt][k])set.add(l.name);
+  for(const wt of ['num','den'])for(const k in G().schedule[wt])for(const l of G().schedule[wt][k])set.add(l.name);
   return [...set].sort((a,b)=>a.localeCompare(b,'ru'));
 }
 function nextOccurrence(subject,from){
@@ -252,11 +282,11 @@ function nextOccurrence(subject,from){
 // ---------- статистика пропусков ----------
 function stats(){
   const res={held:0,u:0,r:0,subj:{}};
-  let d=parse(state.start||'2026-09-01');const t=todayD();
+  let d=parse(G().start||'2026-09-01');const t=todayD();
   let guard=0;
   while(d<=t&&guard++<400){
     for(const l of lessonsFor(d)){
-      const key=ymd(d)+'|'+l.id,a=state.abs[key];
+      const key=ymd(d)+'|'+l.id,a=G().abs[key];
       if(!heldYet(d,l)&&!a)continue;
       res.held++;const s=res.subj[l.name]||(res.subj[l.name]={held:0,u:0,r:0});s.held++;
       if(a==='u'){res.u++;s.u++}else if(a==='r'){res.r++;s.r++}
@@ -270,8 +300,9 @@ const pct=(a,b)=>b?Math.round(a/b*1000)/10:0;
 // ---------- рендер ----------
 function render(){
   for(const b of document.querySelectorAll('.tabs button'))b.setAttribute('aria-selected',b.dataset.tab===ui.tab);
+  $('#groupSeg').innerHTML=Object.entries(state.groups).map(([k,g])=>`<button class="${k===state.cur?'on-u':''}" data-act="group" data-g="${k}" aria-pressed="${k===state.cur}">${esc(g.name)}</button>`).join('');
   const wt=weekType(ui.sel);const pill=$('#weekPill');pill.className='pill '+wt;pill.textContent=WT_NAME[wt];
-  const open=state.hw.filter(h=>!h.done).length;
+  const open=G().hw.filter(h=>!h.done).length;
   $('#hwCount').innerHTML=open?`<span class="badge">${open}</span>`:'';
   const st=stats();const p=pct(st.u+st.r,st.held);
   $('#absPct').innerHTML=st.held?`<span class="badge ${p>=25?'bad':''}">${p}%</span>`:'';
@@ -284,7 +315,7 @@ function viewSched(){
   let days='';
   for(let i=0;i<6;i++){
     const d=addDays(mon,i),n=lessonsFor(d).length,ds=ymd(d);
-    const hasHw=state.hw.some(h=>!h.done&&h.due===ds);
+    const hasHw=G().hw.some(h=>!h.done&&h.due===ds);
     days+=`<button class="day ${+d===+t?'today':''}" aria-pressed="${+d===+ui.sel}" data-act="pick" data-date="${ds}">
       ${hasHw?'<span class="dot" title="Есть ДЗ"></span>':''}<span class="dw">${DOW_S[d.getDay()]}</span><span class="dn">${d.getDate()}</span><span class="dc">${n?n+' п.':'—'}</span></button>`;
   }
@@ -315,10 +346,10 @@ function segHtml(key,a){
       <button class="${a==='r'?'on-r':''}" data-act="abs" data-key="${esc(key)}" data-v="r">Уваж.</button></div>`;
 }
 function absListHtml(){
-  const keys=Object.keys(state.abs).sort().reverse();
+  const keys=Object.keys(G().abs).sort().reverse();
   if(!keys.length)return '<div class="note">Пока ничего не отмечено</div>';
   return keys.map(k=>{
-    const [ds,id]=k.split('|'),d=parse(ds),l=lessonsFor(d).find(x=>x.id===id),v=state.abs[k];
+    const [ds,id]=k.split('|'),d=parse(ds),l=lessonsFor(d).find(x=>x.id===id),v=G().abs[k];
     return `<div class="subjrow"><span class="n">${l?esc(l.name):'Пара удалена из расписания'}<br><span class="note">${DOW_S[d.getDay()]}, ${d.getDate()} ${MON_S[d.getMonth()]}${l?' · '+l.s:''} · ${v==='r'?'уважительная':'без причины'}</span></span><button class="linkbtn" data-act="abs-del" data-key="${esc(k)}">убрать</button></div>`;
   }).join('');
 }
@@ -328,7 +359,7 @@ function absModal(ds){
   openModal(`<h3>Отметить пропуски</h3><div class="settings">
     <div class="field"><label for="absDate">День</label><input type="date" id="absDate" value="${ds}"></div>
     <p class="note" style="margin:0">${d.getDay()?DOW[d.getDay()]+', '+d.getDate()+' '+MON_G[d.getMonth()]+' · '+WT_NAME[weekType(d)]:'Воскресенье'}</p>
-    ${ls.length?`<div class="list">${ls.map(l=>{const key=ds+'|'+l.id;return `<div class="hwcard" style="flex-wrap:wrap;align-items:center"><div class="main"><span class="subj">${l.s}–${l.e}</span><b style="font-size:14px">${esc(l.name)}</b><span class="note">${esc(l.type)}</span></div>${segHtml(key,state.abs[key]||'')}</div>`}).join('')}</div>
+    ${ls.length?`<div class="list">${ls.map(l=>{const key=ds+'|'+l.id;return `<div class="hwcard" style="flex-wrap:wrap;align-items:center"><div class="main"><span class="subj">${l.s}–${l.e}</span><b style="font-size:14px">${esc(l.name)}</b><span class="note">${esc(l.type)}</span></div>${segHtml(key,G().abs[key]||'')}</div>`}).join('')}</div>
     <div class="actions"><button class="ghost small" data-act="abs-day" data-v="u">Весь день — Н</button><button class="ghost small" data-act="abs-day" data-v="r">Весь день — уваж.</button><button class="ghost small" data-act="abs-day" data-v="">Очистить день</button></div>`:'<div class="empty">В этот день пар нет</div>'}
     <div class="btns"><button type="button" class="primary" data-act="close">Готово</button></div></div>`,false);
 }
@@ -337,8 +368,8 @@ function lessonCard(l,d,ds){
   const t=todayD(),nm=nowHM();
   const isNow=+d===+t&&l.s<=nm&&nm<l.e;
   const slot=SLOTS[l.s];
-  const hws=state.hw.filter(h=>h.subject===l.name&&h.due===ds);
-  const key=ds+'|'+l.id,a=state.abs[key]||'';
+  const hws=G().hw.filter(h=>h.subject===l.name&&h.due===ds);
+  const key=ds+'|'+l.id,a=G().abs[key]||'';
   const hwHtml=hws.length?`<div class="hwmini">${hws.map(h=>`
     <div class="hwrow ${h.done?'done':''}"><input type="checkbox" id="cb-${h.id}" data-act="hw-toggle" data-id="${h.id}" ${h.done?'checked':''} aria-label="Выполнено">
     <div class="txt">${esc(h.text)}</div><button class="linkbtn" data-act="hw-edit" data-id="${h.id}">изм.</button></div>`).join('')}</div>`:'';
@@ -359,7 +390,7 @@ function lessonCard(l,d,ds){
 
 function viewHW(){
   const t=ymd(todayD());
-  const items=state.hw.filter(h=>ui.hwFilter==='open'?!h.done:h.done)
+  const items=G().hw.filter(h=>ui.hwFilter==='open'?!h.done:h.done)
     .sort((a,b)=>ui.hwFilter==='open'?a.due.localeCompare(b.due):b.due.localeCompare(a.due));
   const groups={};for(const h of items)(groups[h.due]=groups[h.due]||[]).push(h);
   const html=Object.keys(groups).map(k=>`<div class="group"><div class="ghead ${k<t&&ui.hwFilter==='open'?'over':''}">${k<t&&ui.hwFilter==='open'?'Просрочено · ':''}${relLabel(k)}</div>
@@ -380,7 +411,7 @@ function viewAbs(st){
     .map(([n,s])=>{const m=s.u+s.r;return `<div class="subjrow"><span class="n">${esc(n)}</span><span class="v">${m}/${s.held} · ${pct(m,s.held)}%</span>
       <div class="bar"><i class="u" style="width:${s.held?s.u/s.held*100:0}%"></i><i class="r" style="width:${s.held?s.r/s.held*100:0}%"></i></div></div>`}).join('');
   return `<section class="stats">
-    <div class="big"><span class="pct ${cls}">${p}%</span><span class="note">пропущено пар с ${parse(state.start).getDate()} ${MON_G[parse(state.start).getMonth()]}<br>без уважительных: ${pu}%</span></div>
+    <div class="big"><span class="pct ${cls}">${p}%</span><span class="note">пропущено пар с ${parse(G().start).getDate()} ${MON_G[parse(G().start).getMonth()]}<br>без уважительных: ${pu}%</span></div>
     <div class="kv"><div><b>${st.held}</b><span>прошло пар</span></div><div><b>${miss}</b><span>пропущено</span></div><div><b>${st.u}</b><span>без причины</span></div><div><b>${st.r}</b><span>уважительных</span></div></div>
     <button class="primary" data-act="abs-add">+ Добавить пропуск</button>
   </section>
@@ -389,7 +420,7 @@ function viewAbs(st){
   <section class="stats settings">
     <div class="ghead">Настройки</div>
     <p class="note" style="margin:0">Пропуск можно добавить кнопкой выше (выбираешь день и пары) или прямо в расписании кнопками «Н» и «Уваж.» у прошедшей пары.</p>
-    <div class="field"><label for="startDate">Считать пары с</label><input type="date" id="startDate" value="${state.start}"></div>
+    <div class="field"><label for="startDate">Считать пары с</label><input type="date" id="startDate" value="${G().start}"></div>
     <div class="field"><label>Тип недели</label>
       <div class="actions"><span class="note">Сейчас неделя ${ymd(mondayOf(ui.sel))===ymd(mondayOf(todayD()))?'':'(выбранная) '}— <b>${WT_NAME[weekType(ui.sel)]}</b></span>
       <button class="ghost small" data-act="flip">Поменять числитель и знаменатель</button></div></div>
@@ -438,34 +469,34 @@ document.addEventListener('click',e=>{
   else if(a==='wk'){ui.sel=addDays(ui.sel,7*Number(b.dataset.n));render()}
   else if(a==='today'){ui.sel=defaultSel();render()}
   else if(a==='edit'){ui.edit=!ui.edit;render()}
-  else if(a==='abs'){const v=b.dataset.v;if(v)state.abs[b.dataset.key]=v;else delete state.abs[b.dataset.key];save();render();if(ui.absDate)absModal(ui.absDate)}
+  else if(a==='abs'){const v=b.dataset.v;if(v)G().abs[b.dataset.key]=v;else delete G().abs[b.dataset.key];save();render();if(ui.absDate)absModal(ui.absDate)}
   else if(a==='abs-add'){absModal(ymd(todayD()))}
-  else if(a==='abs-day'){const ds=ui.absDate,v=b.dataset.v;for(const l of lessonsFor(parse(ds))){const k=ds+'|'+l.id;if(v)state.abs[k]=v;else delete state.abs[k]}save();render();absModal(ds)}
-  else if(a==='abs-del'){delete state.abs[b.dataset.key];save();render()}
+  else if(a==='abs-day'){const ds=ui.absDate,v=b.dataset.v;for(const l of lessonsFor(parse(ds))){const k=ds+'|'+l.id;if(v)G().abs[k]=v;else delete G().abs[k]}save();render();absModal(ds)}
+  else if(a==='abs-del'){delete G().abs[b.dataset.key];save();render()}
   else if(a==='hwf'){ui.hwFilter=b.dataset.v;render()}
   else if(a==='hw-add'){
     const subj=b.dataset.subj||allSubjects()[0]||'';
     const from=b.dataset.date?parse(b.dataset.date):todayD();
     hwForm({subject:subj,due:ymd(b.dataset.subj?nextOccurrence(subj,from):nextOccurrence(subj,todayD())),text:''});
   }
-  else if(a==='hw-edit'){const h=state.hw.find(x=>x.id===b.dataset.id);h&&hwForm(h)}
+  else if(a==='hw-edit'){const h=G().hw.find(x=>x.id===b.dataset.id);h&&hwForm(h)}
   else if(a==='hw-del'){
-    if(b.dataset.confirm){state.hw=state.hw.filter(x=>x.id!==b.dataset.id);save();closeModal();render()}
+    if(b.dataset.confirm){G().hw=G().hw.filter(x=>x.id!==b.dataset.id);save();closeModal();render()}
     else{b.dataset.confirm='1';b.textContent='Точно удалить?'}
   }
   else if(a==='close')closeModal();
   else if(a==='les-add'){const d=ui.sel;lessonForm({type:'Практика'},weekType(d),d.getDay())}
-  else if(a==='les-edit'){const d=ui.sel,wt=weekType(d),l=(state.schedule[wt][d.getDay()]||[]).find(x=>x.id===b.dataset.id);l&&lessonForm(l,wt,d.getDay())}
+  else if(a==='les-edit'){const d=ui.sel,wt=weekType(d),l=(G().schedule[wt][d.getDay()]||[]).find(x=>x.id===b.dataset.id);l&&lessonForm(l,wt,d.getDay())}
   else if(a==='les-del'){
-    if(b.dataset.confirm){const{l,wt,dow}=editing;state.schedule[wt][dow]=(state.schedule[wt][dow]||[]).filter(x=>x.id!==l.id);save();closeModal();render()}
+    if(b.dataset.confirm){const{l,wt,dow}=editing;G().schedule[wt][dow]=(G().schedule[wt][dow]||[]).filter(x=>x.id!==l.id);save();closeModal();render()}
     else{b.dataset.confirm='1';b.textContent='Точно удалить?'}
   }
   else if(a==='flip'){state.flip=!state.flip;save();render()}
 });
 document.addEventListener('change',e=>{
   const t=e.target;
-  if(t.dataset.act==='hw-toggle'){const h=state.hw.find(x=>x.id===t.dataset.id);if(h){h.done=t.checked;save();render()}}
-  else if(t.id==='startDate'&&t.value){state.start=t.value;save();render()}
+  if(t.dataset.act==='hw-toggle'){const h=G().hw.find(x=>x.id===t.dataset.id);if(h){h.done=t.checked;save();render()}}
+  else if(t.id==='startDate'&&t.value){G().start=t.value;save();render()}
   else if(t.id==='absDate'&&t.value){absModal(t.value)}
 });
 document.addEventListener('submit',e=>{
@@ -473,13 +504,13 @@ document.addEventListener('submit',e=>{
   if(e.target.id==='hwForm'){
     const id=$('#hwId').value,text=$('#hwText').value.trim();if(!text)return;
     const rec={subject:$('#hwSubj').value,due:$('#hwDue').value,text};
-    if(id){Object.assign(state.hw.find(x=>x.id===id),rec)}else state.hw.push({id:uid(),done:false,...rec});
+    if(id){Object.assign(G().hw.find(x=>x.id===id),rec)}else G().hw.push({id:uid(),done:false,...rec});
     save();closeModal();render();
   }else if(e.target.id==='lesForm'){
     const{l,wt,dow}=editing;
     const rec={s:$('#lS').value,e:$('#lE').value,name:$('#lN').value.trim(),type:$('#lT').value,teacher:$('#lP').value.trim(),room:$('#lR').value.trim()};
     if(!rec.name)return;
-    const arr=state.schedule[wt][dow]||(state.schedule[wt][dow]=[]);
+    const arr=G().schedule[wt][dow]||(G().schedule[wt][dow]=[]);
     if(l.id)Object.assign(arr.find(x=>x.id===l.id),rec);else arr.push({id:wt[0]+dow+uid(),...rec});
     save();closeModal();render();
   }
@@ -499,7 +530,7 @@ async function flush(){
   catch(e){setSync('Не удалось сохранить в облако, данные остались на этом устройстве')}
   writing=false;if(dirty){dirty=false;flush()}
 }
-function adopt(r){state=Object.assign(fresh(),JSON.parse(JSON.stringify(r)));persistLocal();render()}
+function adopt(r){const m=migrate(JSON.parse(JSON.stringify(r)));if(!m)return;state=m;persistLocal();render()}
 (async()=>{
   if(!window.claude||!window.claude.use)return;
   setSync('Подключаюсь к облаку…');
@@ -512,13 +543,13 @@ function adopt(r){state=Object.assign(fresh(),JSON.parse(JSON.stringify(r)));per
     remoteRef=db.doc('data/users/'+id+'/diary');
     const snap=await remoteRef.get();clearTimeout(slow);
     if(snap.exists){const r=snap.data();
-      if(r&&r.v===1&&(r.updatedAt||0)>(state.updatedAt||0))adopt(r);
+      if(r&&(r.v===1||r.v===2)&&(r.updatedAt||0)>(state.updatedAt||0))adopt(r);
       else if((state.updatedAt||0)>((r&&r.updatedAt)||0))flush();
     }else if(state.updatedAt)flush();
     setSync('Синхронизировано с облаком');
     remoteRef.onSnapshot(s=>{
       if(!s.exists||s.metadata.hasPendingWrites)return;
-      const r=s.data();if(r&&r.v===1&&(r.updatedAt||0)>(state.updatedAt||0))adopt(r);
+      const r=s.data();if(r&&(r.v===1||r.v===2)&&(r.updatedAt||0)>(state.updatedAt||0))adopt(r);
     },()=>setSync('Связь с облаком потеряна, изменения сохраняются на этом устройстве'));
   }catch(e){clearTimeout(slow);setSync('Данные сохраняются на этом устройстве')}
 })();
