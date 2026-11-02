@@ -299,6 +299,13 @@ main>*,.stats>*,.subjs>*{min-width:0}
 .brand,.brand-r{min-width:0}
 .gwrap{flex-wrap:nowrap;min-width:0}
 @media (max-width:340px){.mascot{display:none}#groupSeg button{padding:5px 7px;font-size:10px}}
+/* Импорт/экспорт */
+.impbar{display:flex;flex-wrap:wrap;gap:8px}
+.impbar .ghost{flex:1 1 auto;text-align:center;cursor:pointer;font-size:13px}
+.imp-sum{display:grid;gap:4px;background:var(--surface-2);border-radius:10px;padding:10px 12px;font-size:14px}
+.imp-bad{font-size:12px;color:var(--bad);max-height:120px;overflow:auto}
+.opt{display:flex;gap:8px;align-items:flex-start;font-size:14px}
+.opt input{margin-top:3px;accent-color:var(--accent)}
 /* Пропуски по предметам */
 .subjs{display:grid;gap:8px}
 details.subj{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);overflow:hidden}
@@ -366,7 +373,7 @@ details.alldates[open]>summary::after{transform:rotate(90deg)}
   </header>
   <main id="view"></main>
   <p class="foot" id="sync">Данные сохраняются на этом устройстве</p>
-  <p class="foot" style="margin-top:4px;opacity:.6">версия 2.1 · 2 ноября</p>
+  <p class="foot" style="margin-top:4px;opacity:.6">версия 2.2 · 2 ноября</p>
 </div>
 <div id="dim" aria-hidden="true"></div>
 <div id="modal" class="modal" hidden></div>
@@ -690,17 +697,96 @@ function viewAbs(st){
     <div class="big"><span class="pct ${cls}">${p}%</span><span class="note">пропущено пар с ${parse(G().start).getDate()} ${MON_G[parse(G().start).getMonth()]}<br>без уважительных: ${pu}%</span></div>
     <div class="kv"><div><b>${st.held}</b><span>прошло пар</span></div><div><b>${miss}</b><span>пропущено</span></div><div><b>${st.u}</b><span>без причины</span></div><div><b>${st.r}</b><span>уважительных</span></div></div>
     <button class="primary" data-act="abs-add">+ Добавить пропуск</button>
+    <div class="impbar">
+      <label for="impFile" class="ghost">Загрузить файл пропусков</label>
+      <button class="ghost" data-act="imp-paste">Вставить текст</button>
+      <button class="ghost" data-act="exp">Сохранить копию</button>
+      <input type="file" id="impFile" accept=".json,.txt,application/json,text/plain" hidden>
+    </div>
   </section>
   <section class="stats"><div class="ghead">По предметам</div><p class="note" style="margin:0">Нажми на предмет, чтобы увидеть даты пропусков</p><div class="subjs">${rows||'<div class="note">Пар ещё не было</div>'}</div></section>
   <details class="stats alldates"><summary class="ghead">Все пропуски по датам (${miss})</summary><div>${absListHtml()}</div></details>
   <section class="stats settings">
     <div class="ghead">Настройки</div>
-    <p class="note" style="margin:0">Пропуск можно добавить кнопкой выше (выбираешь день и пары) или прямо в расписании кнопками «Н» и «Уваж.» у прошедшей пары.</p>
+    <p class="note" style="margin:0">Пропуск можно добавить кнопкой выше (выбираешь день и пары), прямо в расписании кнопками «Н» и «Уваж.» у прошедшей пары или загрузить готовым файлом.</p>
     <div class="field"><label for="startDate">Считать пары с</label><input type="date" id="startDate" value="${G().start}"></div>
     <div class="field"><label>Тип недели</label>
       <div class="actions"><span class="note">Сейчас неделя ${ymd(mondayOf(ui.sel))===ymd(mondayOf(todayD()))?'':'(выбранная) '}— <b>${WT_NAME[weekType(ui.sel)]}</b></span>
       <button class="ghost small" data-act="flip">Поменять числитель и знаменатель</button></div></div>
   </section>`;
+}
+
+// ---------- файл пропусков: загрузка и сохранение ----------
+const MARK_IN={'н':'u','n':'u','u':'u','б':'r','r':'r','уваж':'r','уваж.':'r','уважительная':'r','у':'r'};
+function groupKeyFrom(v){
+  if(!v)return state.cur;
+  const s=String(v).toLowerCase().replace(/\s+/g,' ').trim();
+  for(const [k,g] of Object.entries(state.groups)){if(k===s||g.name.toLowerCase()===s||g.name.toLowerCase().replace('группа ','')===s.replace('группа ',''))return k}
+  return null;
+}
+function parseImport(text){
+  let o;
+  try{o=JSON.parse(String(text).trim().replace(/^﻿/,''))}catch(e){return {err:'Не получилось прочитать: это не файл пропусков или текст скопирован не целиком.'}}
+  if(!o||!Array.isArray(o.items))return {err:'В файле нет списка пропусков.'};
+  const gk=groupKeyFrom(o.group);
+  if(!gk)return {err:`В дневнике нет группы «${o.group}».`};
+  const g=state.groups[gk],ok=[],bad=[];let min=null,max=null;
+  for(const it of o.items){
+    const mark=MARK_IN[String(it.mark||'н').toLowerCase().trim()];
+    const d=/^\d{4}-\d{2}-\d{2}$/.test(it.date||'')?parse(it.date):null;
+    if(!d||!mark){bad.push(it);continue}
+    const ls=lessonsForG(g,d);
+    let l=ls.find(x=>x.s===it.time&&x.name===it.subject)||ls.find(x=>x.s===it.time)||(ls.filter(x=>x.name===it.subject).length===1?ls.find(x=>x.name===it.subject):null);
+    if(!l){bad.push(it);continue}
+    ok.push({key:it.date+'|'+l.id,mark});
+    if(!min||it.date<min)min=it.date;if(!max||it.date>max)max=it.date;
+  }
+  return {o,gk,ok,bad,min,max};
+}
+const fmtD=s=>{const d=parse(s);return d.getDate()+' '+MON_S[d.getMonth()]};
+function importModal(r){
+  if(r.err){openModal(`<h3>Файл не подошёл</h3><p>${esc(r.err)}</p><div class="btns"><button class="primary" data-act="close">Понятно</button></div>`,false);return}
+  ui.imp=r;
+  const g=state.groups[r.gk],u=r.ok.filter(x=>x.mark==='u').length,rr=r.ok.length-u;
+  openModal(`<h3>Загрузка пропусков</h3>
+  <div class="imp-sum">
+    <div><b>${esc(g.name)}</b>${r.o.student?` · ${esc(r.o.student)}`:''}</div>
+    <div>${r.ok.length} ${plural(r.ok.length,'пропуск','пропуска','пропусков')}${r.min?` с ${fmtD(r.min)} по ${fmtD(r.max)}`:''}</div>
+    <div class="note">без причины: ${u}, уважительных: ${rr}</div>
+  </div>
+  ${r.bad.length?`<div class="imp-bad">Не нашёл в расписании (${r.bad.length}): ${r.bad.map(b=>esc((b.date||'?')+' '+(b.time||'')+' '+(b.subject||''))).join('; ')}</div>`:''}
+  <label class="opt"><input type="radio" name="impMode" id="impReplace" checked> <span>Заменить мои отметки за этот период<br><span class="note">то, что ты ставил сам с ${r.min?fmtD(r.min):'—'} по ${r.max?fmtD(r.max):'—'}, будет заменено файлом</span></span></label>
+  <label class="opt"><input type="radio" name="impMode" id="impAdd"> <span>Добавить к моим отметкам</span></label>
+  ${r.o.start?`<label class="opt"><input type="checkbox" id="impStart" checked> <span>Считать пары с ${fmtD(r.o.start)}</span></label>`:''}
+  <div class="btns"><button type="button" class="ghost" data-act="close">Отмена</button><button class="primary" data-act="imp-do" ${r.ok.length?'':'disabled'}>Загрузить</button></div>`,false);
+}
+function doImport(){
+  const r=ui.imp;if(!r)return;
+  const g=state.groups[r.gk],replace=$('#impReplace')&&$('#impReplace').checked;
+  if(replace&&r.min){for(const k of Object.keys(g.abs)){const ds=k.split('|')[0];if(ds>=r.min&&ds<=r.max)delete g.abs[k]}}
+  for(const x of r.ok)g.abs[x.key]=x.mark;
+  const st=$('#impStart');if(st&&st.checked&&r.o.start)g.start=r.o.start;
+  state.cur=r.gk;ui.imp=null;ui.tab='abs';save();
+  openModal(`<h3>Готово</h3><p>Загружено ${r.ok.length} ${plural(r.ok.length,'пропуск','пропуска','пропусков')}.</p><div class="btns"><button class="primary" data-act="close">Отлично</button></div>`,false);
+  render();
+}
+function exportText(){
+  const g=G(),items=[];
+  for(const [k,v] of Object.entries(g.abs).sort()){
+    const [ds,id]=k.split('|'),l=lessonsFor(parse(ds)).find(x=>x.id===id);
+    if(l)items.push({date:ds,time:l.s,subject:l.name,mark:v==='r'?'уваж':'Н'});
+  }
+  return JSON.stringify({format:'dnevnik-propuski',version:1,group:g.name,start:g.start,items},null,1);
+}
+function doExport(){
+  const txt=exportText(),name='propuski-'+G().name.replace(/\s+/g,'')+'.json';
+  try{
+    const blob=new Blob([txt],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
+  }catch(e){}
+  openModal(`<h3>Копия пропусков</h3><p class="note" style="margin:0">Если файл не скачался, скопируй текст ниже и сохрани в заметки. Потом его можно вставить через «Вставить текст».</p>
+    <div class="field"><textarea id="expText" readonly style="min-height:160px;font-family:var(--f-mono);font-size:11px">${esc(txt)}</textarea></div>
+    <div class="btns"><button class="ghost" data-act="close">Закрыть</button><button class="primary" data-act="exp-copy">Скопировать</button></div>`,false);
 }
 
 // ---------- модальные окна ----------
@@ -749,6 +835,11 @@ document.addEventListener('click',e=>{
   else if(a==='edit'){ui.edit=!ui.edit;render()}
   else if(a==='abs'){const v=b.dataset.v;if(v)G().abs[b.dataset.key]=v;else delete G().abs[b.dataset.key];save();render();if(ui.absDate)absModal(ui.absDate)}
   else if(a==='abs-add'){absModal(ymd(todayD()))}
+  else if(a==='imp-paste'){openModal(`<h3>Вставить пропуски</h3><p class="note" style="margin:0">Вставь сюда текст файла пропусков целиком.</p><div class="field"><textarea id="impText" style="min-height:160px;font-family:var(--f-mono);font-size:11px" placeholder='{"format":"dnevnik-propuski", ...}'></textarea></div><div class="btns"><button class="ghost" data-act="close">Отмена</button><button class="primary" data-act="imp-text">Дальше</button></div>`)}
+  else if(a==='imp-text'){importModal(parseImport($('#impText').value))}
+  else if(a==='imp-do'){doImport()}
+  else if(a==='exp'){doExport()}
+  else if(a==='exp-copy'){const t=$('#expText');const ok=()=>{b.textContent='Скопировано'};try{navigator.clipboard.writeText(t.value).then(ok,()=>{t.select()})}catch(e){t.select()}}
   else if(a==='abs-day'){const ds=ui.absDate,v=b.dataset.v;for(const l of lessonsFor(parse(ds))){const k=ds+'|'+l.id;if(v)G().abs[k]=v;else delete G().abs[k]}save();render();absModal(ds)}
   else if(a==='abs-del'){delete G().abs[b.dataset.key];save();render()}
   else if(a==='hwf'){ui.hwFilter=b.dataset.v;render()}
@@ -776,6 +867,7 @@ document.addEventListener('change',e=>{
   if(t.dataset.act==='hw-toggle'){const h=G().hw.find(x=>x.id===t.dataset.id);if(h){h.done=t.checked;save();render()}}
   else if(t.id==='startDate'&&t.value){G().start=t.value;save();render()}
   else if(t.id==='absDate'&&t.value){absModal(t.value)}
+  else if(t.id==='impFile'&&t.files&&t.files[0]){const fr=new FileReader();fr.onload=()=>importModal(parseImport(fr.result));fr.onerror=()=>importModal({err:'Не получилось открыть файл.'});fr.readAsText(t.files[0]);t.value=''}
 });
 document.addEventListener('submit',e=>{
   e.preventDefault();
