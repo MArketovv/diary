@@ -2,6 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -92,7 +94,10 @@ html:root[data-side="light"] .brk::before,html:root[data-side="light"] .brk::aft
   background:radial-gradient(120% 55% at 50% -12%,var(--glow),transparent 62%),radial-gradient(70% 45% at 105% 105%,var(--glow2),transparent 70%)}
 #fx{position:fixed;inset:0;z-index:30;pointer-events:none}
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden;max-width:100%}
+.app{width:100%;min-width:0}
+.stats,.top,main,.lesson,details.subj{max-width:100%}
+body{overflow-x:hidden}
 body{overflow-x:clip;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
@@ -140,7 +145,7 @@ main{display:grid;gap:14px;padding-top:4px}
 .iconbtn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:18px;line-height:1;display:grid;place-items:center;flex:none}
 .ghost{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 12px;font-weight:600;font-size:13px}
 .primary{border:0;background:var(--accent);color:var(--accent-ink);border-radius:10px;padding:9px 14px;font-weight:700}
-.days{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.days{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
 .day{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 2px 7px;display:grid;justify-items:center;gap:1px;position:relative}
 .day .dw{font-size:12px;color:var(--muted);font-weight:600}
 .day .dn{font-family:var(--f-mono);font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
@@ -152,7 +157,7 @@ main{display:grid;gap:14px;padding-top:4px}
 .dayhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
 h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wrap:balance}
 .list{display:grid;gap:10px}
-.lesson{display:grid;grid-template-columns:78px 1fr;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.lesson{display:grid;grid-template-columns:78px minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
 .lesson.now{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .time{background:var(--surface-2);border-right:1px solid var(--line);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .time b{font-size:16px;font-weight:600}
@@ -190,11 +195,11 @@ h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wra
 .big{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 .big .pct{font-family:var(--f-display);font-weight:700;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
 .big .pct.bad{color:var(--bad)} .big .pct.warn{color:var(--warn)} .big .pct.ok{color:var(--ok)}
-.kv{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.kv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .kv div{background:var(--surface-2);border-radius:10px;padding:8px 10px}
 .kv b{display:block;font-family:var(--f-mono);font-size:18px;font-variant-numeric:tabular-nums}
 .kv span{font-size:12px;color:var(--muted)}
-.subjrow{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.subjrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
 .subjrow:first-child{border-top:0}
 .subjrow .n{font-weight:600;font-size:14px;min-width:0}
 .subjrow .v{font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
@@ -206,7 +211,7 @@ h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0;text-wra
 .field label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
 .field input,.field select,.field textarea{border:1px solid var(--line);background:var(--surface-2);border-radius:10px;padding:9px 11px;width:100%;min-width:0}
 .field textarea{min-height:90px;resize:vertical}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 .note{font-size:13px;color:var(--muted)}
 .foot{margin-top:22px;text-align:center;font-size:12px;color:var(--muted)}
 .modal[hidden]{display:none!important}
@@ -276,13 +281,13 @@ html[data-side="dark"] #flash{background:#FFD9CF}
 .chip.solid{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .prog{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
 .prog i{display:block;height:100%;background:var(--ink)}
-.disc{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:12px 0;border-top:1px solid var(--line);align-items:start}
+.disc{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:12px 0;border-top:1px solid var(--line);align-items:start}
 .disc:first-child{border-top:0}
 .disc .n{font-weight:600;min-width:0}
 .disc .b{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
 .disc .h{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:2px 14px;font-size:12px;color:var(--muted);font-family:var(--f-mono)}
 .info h2{font-size:16px}
-.info dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:14px}
+.info dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:0;font-size:14px}
 .info dt{color:var(--muted)} .info dd{margin:0;min-width:0}
 /* Защита от вылезания за экран: колонки сетки не шире контейнера, длинные подписи переносятся */
 main,.list,.subjs,.settings,.group,.top{grid-template-columns:minmax(0,1fr)}
@@ -297,7 +302,7 @@ main>*,.stats>*,.subjs>*{min-width:0}
 /* Пропуски по предметам */
 .subjs{display:grid;gap:8px}
 details.subj{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);overflow:hidden}
-details.subj summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;padding:10px 12px}
+details.subj summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:10px 12px}
 details.subj summary::-webkit-details-marker{display:none}
 details.subj .sp{font-family:var(--f-display);font-weight:700;font-size:20px;min-width:3.2ch;text-align:right;font-variant-numeric:tabular-nums}
 .sp.bad{color:var(--bad)} .sp.warn{color:var(--warn)} .sp.ok{color:var(--ink)}
@@ -307,7 +312,7 @@ details.subj .chev{color:var(--muted);font-size:20px;transition:transform .2s}
 details.subj[open] .chev{transform:rotate(90deg)}
 details.subj summary .bar{grid-column:1/-1}
 ul.misses{list-style:none;margin:0;padding:2px 12px 10px;display:grid;gap:2px;border-top:1px solid var(--line)}
-ul.misses li{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line)}
+ul.misses li{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:10px;align-items:center;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line)}
 ul.misses li:last-child{border-bottom:0}
 ul.misses .dd{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 ul.misses .tt{color:var(--muted);font-family:var(--f-mono);font-size:12px;min-width:0}
@@ -335,9 +340,9 @@ details.alldates[open]>summary::after{transform:rotate(90deg)}
   .brk{gap:6px}
   .tabs button{font-size:13px;padding:9px 5px;gap:4px}
   .tabs .wide{display:none} .tabs .short{display:inline}
-  .lesson{grid-template-columns:64px 1fr}
+  .lesson{grid-template-columns:64px minmax(0,1fr)}
   .time b{font-size:14px}.time span{font-size:12px}
-  .kv{grid-template-columns:repeat(2,1fr)}
+  .kv{grid-template-columns:repeat(2,minmax(0,1fr))}
   .day .dn{font-size:16px}
 }
 @media (prefers-reduced-motion:no-preference){.tabs button,.day,.seg button{transition:background .15s,color .15s}}
@@ -361,6 +366,7 @@ details.alldates[open]>summary::after{transform:rotate(90deg)}
   </header>
   <main id="view"></main>
   <p class="foot" id="sync">Данные сохраняются на этом устройстве</p>
+  <p class="foot" style="margin-top:4px;opacity:.6">версия 2.1 · 2 ноября</p>
 </div>
 <div id="dim" aria-hidden="true"></div>
 <div id="modal" class="modal" hidden></div>
