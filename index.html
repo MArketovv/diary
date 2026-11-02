@@ -284,6 +284,32 @@ html[data-side="dark"] #flash{background:#FFD9CF}
 .info h2{font-size:16px}
 .info dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:14px}
 .info dt{color:var(--muted)} .info dd{margin:0;min-width:0}
+/* Пропуски по предметам */
+.subjs{display:grid;gap:8px}
+details.subj{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);overflow:hidden}
+details.subj summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;padding:10px 12px}
+details.subj summary::-webkit-details-marker{display:none}
+details.subj .sp{font-family:var(--f-display);font-weight:700;font-size:20px;min-width:3.2ch;text-align:right;font-variant-numeric:tabular-nums}
+.sp.bad{color:var(--bad)} .sp.warn{color:var(--warn)} .sp.ok{color:var(--ink)}
+details.subj .sn{display:grid;min-width:0}
+details.subj .sn b{font-size:14px;overflow-wrap:anywhere}
+details.subj .chev{color:var(--muted);font-size:20px;transition:transform .2s}
+details.subj[open] .chev{transform:rotate(90deg)}
+details.subj summary .bar{grid-column:1/-1}
+ul.misses{list-style:none;margin:0;padding:2px 12px 10px;display:grid;gap:2px;border-top:1px solid var(--line)}
+ul.misses li{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line)}
+ul.misses li:last-child{border-bottom:0}
+ul.misses .dd{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+ul.misses .tt{color:var(--muted);font-family:var(--f-mono);font-size:12px;min-width:0}
+.mk{font-size:11px;font-weight:700;border-radius:6px;padding:1px 7px}
+.mk.mu{background:var(--bad);color:var(--surface)} .mk.mr{background:var(--warn-soft);color:var(--warn)}
+.cleanrow{display:grid;gap:6px;padding-top:6px}
+details.alldates>summary{cursor:pointer;list-style:none}
+details.alldates>summary::-webkit-details-marker{display:none}
+details.alldates>summary::after{content:" ›";display:inline-block;transition:transform .2s}
+details.alldates[open]>summary::after{transform:rotate(90deg)}
+.lmiss{font-size:11px;font-weight:700;border-radius:6px;padding:1px 7px;border:1px solid var(--line);color:var(--muted);cursor:pointer;background:transparent}
+.lmiss.hot{border-color:var(--bad);color:var(--bad)}
 @media (max-width:440px){
   body{font-size:14px}
   h1{font-size:19px}
@@ -416,9 +442,12 @@ function weekType(d){
   let den=((w%2)+2)%2===0; if(state.flip)den=!den; return den?'den':'num';
 }
 const WT_NAME={num:'числитель',den:'знаменатель'};
+const LATE_START=new Date(2026,9,3); // пропедевтические курсы начались 3 октября
 function lessonsForG(g,d){
   const dow=d.getDay(); if(!dow)return [];
-  return ((g.schedule[weekType(d)]||{})[dow]||[]).slice().sort((a,b)=>a.s.localeCompare(b.s));
+  let ls=((g.schedule[weekType(d)]||{})[dow]||[]).slice().sort((a,b)=>a.s.localeCompare(b.s));
+  if(d<LATE_START)ls=ls.filter(l=>!(CUR_BY[l.name]&&CUR_BY[l.name].late));
+  return ls;
 }
 function lessonsFor(d){return lessonsForG(G(),d)}
 const toMin=t=>{const[h,m]=t.split(':').map(Number);return h*60+m};
@@ -474,7 +503,9 @@ function stats(){
       const key=ymd(d)+'|'+l.id,a=G().abs[key];
       if(!heldYet(d,l)&&!a)continue;
       res.held++;const s=res.subj[l.name]||(res.subj[l.name]={held:0,u:0,r:0});s.held++;
+      if(!s.list)s.list=[];
       if(a==='u'){res.u++;s.u++}else if(a==='r'){res.r++;s.r++}
+      if(a)s.list.push({key,d:new Date(d),l,v:a});
     }
     d=addDays(d,1);
   }
@@ -492,7 +523,7 @@ function render(){
   const wt=weekType(ui.sel);const pill=$('#weekPill');pill.className='pill '+wt;pill.textContent=WT_NAME[wt];
   const open=G().hw.filter(h=>!h.done).length;
   $('#hwCount').innerHTML=open?`<span class="badge">${open}</span>`:'';
-  const st=stats();const p=pct(st.u+st.r,st.held);
+  const st=stats();STC=st;const p=pct(st.u+st.r,st.held);
   $('#absPct').innerHTML=st.held?`<span class="badge ${p>=25?'bad':''}">${Math.round(p)}%</span>`:'';
   $('#view').innerHTML=ui.tab==='sched'?viewSched():ui.tab==='hw'?viewHW():ui.tab==='sem'?viewSem(st):viewAbs(st);
 }
@@ -555,6 +586,12 @@ function absModal(ds){
     <div class="btns"><button type="button" class="primary" data-act="close">Готово</button></div></div>`,false);
 }
 
+let STC=null;
+function subjBadge(n){
+  const s=STC&&STC.subj[n];if(!s||!s.held)return '';
+  const m=s.u+s.r,pp=pct(m,s.held);
+  return `<button class="lmiss ${pp>=25?'hot':''}" data-act="goSubj" data-subj="${esc(n)}" title="Пропуски по предмету">пропуски ${m}/${s.held} · ${Math.round(pp)}%</button>`;
+}
 function lessonCard(l,d,ds){
   const t=todayD(),nm=nowHM();
   const isNow=+d===+t&&l.s<=nm&&nm<l.e;
@@ -569,7 +606,7 @@ function lessonCard(l,d,ds){
     <div class="time"><span class="pair">${isNow?'идёт':slot?slot+' пара':'пара'}</span><b>${l.s}</b><span>${l.e}</span></div>
     <div class="lbody">
       <h3>${esc(l.name)}</h3>
-      <div class="meta"><span class="type ${typeCls(l.type)}">${esc(l.type)}</span>${l.teacher?`<span>${esc(l.teacher)}</span>`:''}${l.room?`<span>ауд. ${esc(l.room)}</span>`:''}${CUR_BY[l.name]&&CUR_BY[l.name].att==='экз'?'<span class="att">экзамен</span>':''}</div>
+      <div class="meta"><span class="type ${typeCls(l.type)}">${esc(l.type)}</span>${l.teacher?`<span>${esc(l.teacher)}</span>`:''}${l.room?`<span>ауд. ${esc(l.room)}</span>`:''}${CUR_BY[l.name]&&CUR_BY[l.name].att==='экз'?'<span class="att">экзамен</span>':''}${subjBadge(l.name)}</div>
       ${hwHtml}
       <div class="actions">
         <button class="ghost small" data-act="hw-add" data-subj="${esc(l.name)}" data-date="${ds}">+ ДЗ на след. пару</button>
@@ -622,16 +659,24 @@ function viewSem(st){
 function viewAbs(st){
   const miss=st.u+st.r,p=pct(miss,st.held),pu=pct(st.u,st.held);
   const cls=p>=25?'bad':p>=10?'warn':'ok';
-  const rows=Object.entries(st.subj).sort((a,b)=>pct(b[1].u+b[1].r,b[1].held)-pct(a[1].u+a[1].r,a[1].held)||a[0].localeCompare(b[0],'ru'))
-    .map(([n,s])=>{const m=s.u+s.r;return `<div class="subjrow"><span class="n">${esc(n)}</span><span class="v">${m}/${s.held} · ${pct(m,s.held)}%</span>
-      <div class="bar"><i class="u" style="width:${s.held?s.u/s.held*100:0}%"></i><i class="r" style="width:${s.held?s.r/s.held*100:0}%"></i></div></div>`}).join('');
+  const ents=Object.entries(st.subj).sort((a,b)=>pct(b[1].u+b[1].r,b[1].held)-pct(a[1].u+a[1].r,a[1].held)||(b[1].u+b[1].r)-(a[1].u+a[1].r)||a[0].localeCompare(b[0],'ru'));
+  const withMiss=ents.filter(([,s])=>s.u+s.r>0),clean=ents.filter(([,s])=>s.u+s.r===0);
+  const rows=withMiss.map(([n,s])=>{const m=s.u+s.r,pp=pct(m,s.held),c=pp>=25?'bad':pp>=10?'warn':'ok';
+    const lst=s.list.slice().sort((a,b)=>b.d-a.d).map(x=>`<li><span class="dd">${DOW_S[x.d.getDay()]} ${x.d.getDate()} ${MON_S[x.d.getMonth()]}</span><span class="tt">${x.l.s} · ${esc(x.l.type.toLowerCase())}</span><span class="mk ${x.v==='r'?'mr':'mu'}">${x.v==='r'?'уваж.':'Н'}</span><button class="linkbtn" data-act="abs-del" data-key="${esc(x.key)}" aria-label="Убрать пропуск">убрать</button></li>`).join('');
+    return `<details class="subj"${ui.openSubj===n?' open':''} data-subj="${esc(n)}"><summary>
+      <span class="sp ${c}">${Math.round(pp)}%</span>
+      <span class="sn"><b>${esc(n)}</b><span class="note">пропущено ${m} из ${s.held} · ${s.u?`Н ${s.u}`:''}${s.u&&s.r?', ':''}${s.r?`уваж. ${s.r}`:''}</span></span>
+      <span class="chev" aria-hidden="true">›</span>
+      <span class="bar"><i class="u" style="width:${s.held?s.u/s.held*100:0}%"></i><i class="r" style="width:${s.held?s.r/s.held*100:0}%"></i></span>
+    </summary><ul class="misses">${lst}</ul></details>`}).join('')
+    +(clean.length?`<div class="cleanrow"><span class="ghead">Без пропусков</span><div class="chips">${clean.map(([n,s])=>`<span class="chip">${esc(n)} <b>0/${s.held}</b></span>`).join('')}</div></div>`:'');
   return `<section class="stats">
     <div class="big"><span class="pct ${cls}">${p}%</span><span class="note">пропущено пар с ${parse(G().start).getDate()} ${MON_G[parse(G().start).getMonth()]}<br>без уважительных: ${pu}%</span></div>
     <div class="kv"><div><b>${st.held}</b><span>прошло пар</span></div><div><b>${miss}</b><span>пропущено</span></div><div><b>${st.u}</b><span>без причины</span></div><div><b>${st.r}</b><span>уважительных</span></div></div>
     <button class="primary" data-act="abs-add">+ Добавить пропуск</button>
   </section>
-  <section class="stats"><div class="ghead">Отмеченные пропуски</div><div>${absListHtml()}</div></section>
-  <section class="stats"><div class="ghead">По предметам</div><div>${rows||'<div class="note">Пар ещё не было</div>'}</div></section>
+  <section class="stats"><div class="ghead">По предметам</div><p class="note" style="margin:0">Нажми на предмет, чтобы увидеть даты пропусков</p><div class="subjs">${rows||'<div class="note">Пар ещё не было</div>'}</div></section>
+  <details class="stats alldates"><summary class="ghead">Все пропуски по датам (${miss})</summary><div>${absListHtml()}</div></details>
   <section class="stats settings">
     <div class="ghead">Настройки</div>
     <p class="note" style="margin:0">Пропуск можно добавить кнопкой выше (выбираешь день и пары) или прямо в расписании кнопками «Н» и «Уваж.» у прошедшей пары.</p>
@@ -681,6 +726,7 @@ document.addEventListener('click',e=>{
   if(b.dataset.tab){ui.tab=b.dataset.tab;render();return}
   const a=b.dataset.act;
   if(a==='group'){const g=b.dataset.g;if(state.groups[g]&&g!==state.cur){const r=b.getBoundingClientRect();fx.burst((SIDES[g]||SIDES.g1).cls,r.left+r.width/2,r.top+r.height/2);state.cur=g;ui.edit=false;save();render()}}
+  else if(a==='goSubj'){ui.openSubj=b.dataset.subj;ui.tab='abs';render();const el=document.querySelector(`details.subj[open]`);el&&el.scrollIntoView({block:'center',behavior:'smooth'})}
   else if(a==='pick'){ui.sel=parse(b.dataset.date);render()}
   else if(a==='wk'){ui.sel=addDays(ui.sel,7*Number(b.dataset.n));render()}
   else if(a==='today'){ui.sel=defaultSel();render()}
@@ -731,6 +777,7 @@ document.addEventListener('submit',e=>{
     save();closeModal();render();
   }
 });
+document.addEventListener('toggle',e=>{const t=e.target;if(t.matches&&t.matches('details.subj')){if(t.open)ui.openSubj=t.dataset.subj;else if(ui.openSubj===t.dataset.subj)ui.openSubj=null}},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#modal').hidden)closeModal()});
 
 // ---------- сохранение ----------
