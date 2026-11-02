@@ -284,6 +284,16 @@ html[data-side="dark"] #flash{background:#FFD9CF}
 .info h2{font-size:16px}
 .info dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:14px}
 .info dt{color:var(--muted)} .info dd{margin:0;min-width:0}
+/* Защита от вылезания за экран: колонки сетки не шире контейнера, длинные подписи переносятся */
+main,.list,.subjs,.settings,.group,.top{grid-template-columns:minmax(0,1fr)}
+main>*,.stats>*,.subjs>*{min-width:0}
+.chip{white-space:normal;overflow-wrap:anywhere}
+.tabs{overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+#groupSeg button{white-space:nowrap}
+.brand,.brand-r{min-width:0}
+.gwrap{flex-wrap:nowrap;min-width:0}
+@media (max-width:340px){.mascot{display:none}#groupSeg button{padding:5px 7px;font-size:10px}}
 /* Пропуски по предметам */
 .subjs{display:grid;gap:8px}
 details.subj{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);overflow:hidden}
